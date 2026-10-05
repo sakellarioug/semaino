@@ -1,0 +1,59 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+my_langflow_env/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables
+.env
+local.env
+
+# Flask uploads and saved sessions
+uploads/
+saved_analyses/
+out_*/
+
+# IDE / Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project-specific output & logs
+dummy/
+long/
+*.log
+marker_err.log
+
+# Test PDFs
+*.pdf
+!dummy.pdf
+!long.pdf
+
+# Packaging
+*.whl
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Backups
+*_backup_*
+*v0.1*

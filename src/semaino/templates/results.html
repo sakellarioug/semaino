@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Semaino Results</title>
+    <style>
+        :root {
+            /* Material 3 Dark Theme */
+            --md-sys-color-primary: #A8C7FA;
+            --md-sys-color-on-primary: #062E6F;
+            --md-sys-color-primary-container: #284777;
+            --md-sys-color-on-primary-container: #D6E3FF;
+            --md-sys-color-surface: #111318;
+            --md-sys-color-on-surface: #E1E2E8;
+            --md-sys-color-on-surface-variant: #C4C6D0;
+            --md-sys-color-surface-container: #1E2025;
+            --md-sys-color-surface-container-high: #282A2F;
+            --md-sys-color-outline: #8E9099;
+            --md-sys-color-outline-variant: #44474E;
+            --md-sys-color-error: #FFB4AB;
+            
+            /* Highlighting custom colors */
+            --mark-bg: rgba(226, 226, 226, 0.1);
+            --mark-border: var(--md-sys-color-outline-variant);
+            --target-ring: var(--md-sys-color-primary);
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            height: 100vh;
+            font-family: 'Roboto', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--md-sys-color-surface-container);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            height: 64px;
+            padding: 0 24px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .topbar-title {
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-action {
+            color: var(--md-sys-color-primary);
+            background-color: transparent;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0 24px;
+            height: 40px;
+            border-radius: 100px;
+            border: 1px solid var(--md-sys-color-outline);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+            cursor: pointer;
+            font-family: 'Roboto', system-ui, sans-serif;
+        }
+
+        .btn-action:hover {
+            background-color: rgba(168, 199, 250, 0.08); /* state layer */
+        }
+        
+        .btn-action.primary {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border-color: transparent;
+        }
+        
+        .btn-action.primary:hover {
+            background-color: rgba(168, 199, 250, 0.85); /* state layer */
+        }
+
+        .btn-back {
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0 24px;
+            height: 40px;
+            border-radius: 100px;
+            border: 1px solid var(--md-sys-color-outline);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn-back:hover {
+            background-color: rgba(168, 199, 250, 0.08); /* state layer */
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 320px;
+            background-color: var(--md-sys-color-surface-container);
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+            overflow-y: auto;
+            padding: 24px 16px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h2 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: var(--md-sys-color-on-surface);
+            padding: 0 16px;
+        }
+
+        .sidebar details {
+            margin-bottom: 8px;
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: var(--md-sys-color-surface-container-high);
+        }
+
+        .sidebar summary {
+            cursor: pointer;
+            font-weight: 500;
+            padding: 12px 16px;
+            user-select: none;
+            font-size: 0.875rem;
+            color: var(--md-sys-color-on-surface);
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar summary:hover {
+            background-color: rgba(225, 226, 232, 0.08);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .sidebar a {
+            display: block;
+            text-decoration: none;
+            color: var(--md-sys-color-on-surface-variant);
+            padding: 12px 16px 12px 40px;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(168, 199, 250, 0.08);
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .main {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--md-sys-color-surface);
+        }
+
+        .tabs {
+            display: flex;
+            background-color: var(--md-sys-color-surface-container);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            padding: 0 16px;
+        }
+
+        .tab {
+            padding: 0 24px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, background-color 0.2s;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--md-sys-color-on-surface);
+            background-color: rgba(225, 226, 232, 0.08);
+        }
+
+        .tab.active {
+            color: var(--md-sys-color-primary);
+            border-bottom-color: var(--md-sys-color-primary);
+        }
+
+        .view-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: none;
+        }
+
+        .view-content.active {
+            display: block;
+            animation: fadeIn 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .document-card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 28px;
+            padding: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.75;
+            font-size: 1rem;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* Minimap Text View Entity Highlighting (the minimap is an id-free clone of the main text) */
+        .minimap-content-text mark.custom-ner-word.tp-ent {
+            background-color: #ffb4ab !important;
+            color: black !important;
+            border: 1px solid #d93025 !important;
+            box-shadow: 0 0 4px rgba(255, 180, 171, 0.8) !important;
+        }
+        /* Must out-rank the rule above so unticked categories also disappear from the minimap */
+        .minimap-content-text mark.custom-ner-word.tp-ent.filter-hidden {
+            background-color: transparent !important;
+            color: var(--md-sys-color-on-surface) !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Entity selected from the sidebar: persists until another entity is chosen */
+        mark.custom-ner-word.entity-selected,
+        .minimap-content-text mark.custom-ner-word.tp-ent.entity-selected {
+            outline: 3px solid var(--md-sys-color-primary) !important;
+            outline-offset: 2px;
+            box-shadow: 0 0 14px var(--md-sys-color-primary) !important;
+        }
+        .minimap-content-text mark.custom-ner-word.tp-ent.entity-selected {
+            outline-width: 12px !important;   /* stays visible at minimap scale */
+        }
+        .mm-ent.entity-selected {
+            outline: 2px solid var(--md-sys-color-primary);
+            transform: scale(1.6);
+        }
+
+
+        /* Displacy overrides */
+        .entities {
+            line-height: 2.2 !important;
+        }
+
+        mark.entity {
+            background-color: var(--mark-bg) !important;
+            color: var(--md-sys-color-on-surface) !important;
+            border: 1px solid var(--mark-border) !important;
+            padding: 2px 8px !important;
+            border-radius: 8px !important;
+            margin: 0 2px !important;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+            scroll-margin-top: 100px;
+            font-weight: 500;
+        }
+        
+        mark.entity span {
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* Target highlighting */
+        mark.entity:target {
+            background-color: var(--md-sys-color-primary-container) !important;
+            box-shadow: 0 0 0 2px var(--target-ring) !important;
+            color: var(--md-sys-color-on-primary-container) !important;
+            z-index: 10;
+            position: relative;
+            border-color: var(--md-sys-color-primary) !important;
+        }
+        
+        mark.entity:target span {
+             color: var(--md-sys-color-on-primary-container);
+        }
+
+        /* Dynamic Filtering */
+        mark.entity.filter-hidden,
+        mark.custom-ner-word.filter-hidden {
+            background-color: transparent !important;
+            color: var(--md-sys-color-on-surface) !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 0.15em !important;
+            cursor: auto !important;
+        }
+
+        mark.entity.filter-hidden span,
+        mark.custom-ner-word.filter-hidden span {
+            display: none !important;
+        }
+        
+        .mm-ent.filter-hidden {
+            background-color: #5f6368 !important;
+            opacity: 0.3 !important;
+        }
+
+        /* Sidebar toggles */
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .category-toggle {
+            cursor: pointer;
+            accent-color: var(--md-sys-color-primary);
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            margin-top: 0;
+        }
+
+        /* POS & Dependency Flowing Styles */
+        .pos-paragraph {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            line-height: 2.8;
+            font-size: 1.15rem;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .pos-paragraph:last-child {
+            border-bottom: none;
+        }
+
+        .pos-mark {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.45em 0.6em;
+            margin: 0.25em;
+            line-height: 1.2;
+            border-radius: 0.35em;
+            vertical-align: top;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
+            color: var(--md-sys-color-on-surface);
+            background-color: var(--md-sys-color-surface-container-high);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .pos-mark:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--md-sys-color-outline);
+        }
+
+        .pos-tag {
+            font-size: 0.65em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.15em 0.3em;
+            border-radius: 4px;
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .pos-dep-tag {
+            font-size: 0.65em;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .pos-metadata {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            border-top: 1px dashed var(--md-sys-color-outline-variant);
+            padding-top: 4px;
+        }
+
+        /* Paragraph / sentence / word indices in the POS & Dependency view */
+        .pos-paragraph-group {
+            border-left: 4px solid #5a9df8;
+            padding-left: 16px;
+            margin-bottom: 32px;
+        }
+        .pos-paragraph-group .pos-paragraph {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+        }
+        .pos-paragraph-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #5a9df8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .pos-sentence-label {
+            display: inline-block;
+            vertical-align: top;
+            margin: 1.1em 0.4em 0 0;
+            padding: 0.1em 0.45em;
+            line-height: 1.4;
+            font-size: 0.65rem;
+            font-weight: 700;
+            font-family: monospace;
+            color: #6dd58c;
+            border: 1px solid #6dd58c;
+            border-radius: 4px;
+        }
+        .pos-index {
+            font-size: 0.6em;
+            font-family: monospace;
+            opacity: 0.55;
+            margin-bottom: 2px;
+        }
+        .dep-note {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding: 12px 16px;
+            border-left: 4px solid #FF9800;
+            border-radius: 0 8px 8px 0;
+            background: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .dep-note-btn, .text-size-btn {
+            flex-shrink: 0;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 1px solid var(--md-sys-color-outline);
+            background: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        .dep-note-btn:hover, .text-size-btn:hover {
+            border-color: var(--md-sys-color-primary);
+        }
+
+        /* Text size control in the Named Entities view */
+        .text-size-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+        .text-size-control .text-size-btn {
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+        .text-size-control input[type="range"] {
+            width: 110px;
+            accent-color: var(--md-sys-color-primary);
+            cursor: pointer;
+        }
+
+        /* All Metadata Inline Styles */
+        .all-metadata-mark {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5em 0.6em;
+            margin: 0.3em;
+            line-height: 1.2;
+            border-radius: 0.4em;
+            vertical-align: top;
+            background-color: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+
+        .all-metadata-mark:hover {
+            transform: translateY(-2px);
+            border-color: var(--md-sys-color-primary);
+        }
+
+        .all-metadata-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 6px;
+            border-top: 1px dashed var(--md-sys-color-outline-variant);
+            padding-top: 6px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .all-metadata-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 0.65em;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .meta-label {
+            opacity: 0.6;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        /* Minimap Styles */
+        .minimap-wrapper {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .minimap-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--md-sys-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .minimap-legend {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .minimap-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-box { width: 12px; height: 12px; border-radius: 2px; }
+
+        .minimap-canvas {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .mm-para {
+            border: 1px solid #5a9df8;
+            border-radius: 4px;
+            padding: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            background-color: rgba(90, 157, 248, 0.05);
+        }
+
+        .mm-sent {
+            border: 1px solid #6dd58c;
+            border-radius: 2px;
+            padding: 2px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            background-color: var(--md-sys-color-surface-container-high);
+        }
+
+        .mm-word {
+            width: 4px;
+            height: 8px;
+            border-radius: 1px;
+            background-color: #5f6368;
+        }
+
+        .mm-word.mm-ent {
+            background-color: #ffb4ab;
+        }
+
+        /* Text Preview Minimap Styles */
+        .text-preview-wrapper {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #interactive-text-container.show-dep-arrows mark.entity {
+            position: relative;
+            cursor: pointer;
+        }
+        #interactive-text-container.show-dep-arrows mark.entity:hover::after {
+            content: "DEP: " attr(data-dep) " ➔ " attr(data-head);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--md-sys-color-surface-container-highest);
+            color: var(--md-sys-color-on-surface);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 100;
+            margin-bottom: 4px;
+            pointer-events: none;
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .tp-canvas {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 12px;
+        }
+
+        .tp-para {
+            border: 2px solid #5a9df8;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background-color: rgba(90, 157, 248, 0.05);
+        }
+
+        .tp-sent {
+            border: 1px solid #6dd58c;
+            border-radius: 4px;
+            padding: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            background-color: var(--md-sys-color-surface-container-high);
+        }
+
+        .tp-word {
+            font-size: 0.65rem;
+            line-height: 1.2;
+            padding: 2px 4px;
+            border-radius: 2px;
+            background-color: var(--md-sys-color-surface-container-highest);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            color: var(--md-sys-color-on-surface);
+            font-family: monospace;
+        }
+
+        .tp-word.tp-ent {
+            background-color: rgba(255, 180, 171, 0.2);
+            border-color: #ffb4ab;
+            color: #ffb4ab;
+            font-weight: bold;
+        }
+
+        /* Document Map View Styles */
+        .map-details {
+            margin-bottom: 12px;
+            background-color: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .map-summary {
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            background-color: var(--md-sys-color-surface-container-high);
+            transition: background-color 0.2s;
+        }
+        
+        .map-summary:hover {
+            background-color: var(--md-sys-color-surface-container-highest);
+        }
+
+        .map-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .map-summary::before {
+            content: '▶';
+            font-size: 0.8rem;
+            margin-right: 12px;
+            color: var(--md-sys-color-primary);
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .map-details[open] > .map-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .map-content {
+            padding: 16px;
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .map-sentence-details {
+            margin-bottom: 8px;
+            border-left: 3px solid var(--md-sys-color-secondary);
+            padding-left: 12px;
+        }
+
+        .map-sentence-summary {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            cursor: pointer;
+            padding: 4px 0;
+            list-style: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .map-sentence-summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .map-sentence-summary::before {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236dd58c'%3E%3Cpath d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            transition: transform 0.2s;
+        }
+
+        .map-sentence-details[open] > .map-sentence-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .map-sentence-summary:hover {
+            color: var(--md-sys-color-primary);
+        }
+
+        .map-sentence-flow {
+            padding: 16px 24px;
+            font-size: 1.15rem;
+            line-height: 2.2;
+            color: var(--md-sys-color-on-surface);
+            background-color: var(--md-sys-color-surface-container-highest);
+            border-radius: 8px;
+        }
+
+        .tooltip-word {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            padding: 0 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .tooltip-word:hover {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .tooltip-content {
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--md-sys-color-on-surface);
+            color: var(--md-sys-color-surface);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Roboto', sans-serif;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, bottom 0.2s;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            pointer-events: none;
+            text-align: left;
+        }
+        
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--md-sys-color-on-surface) transparent transparent transparent;
+        }
+
+        .tooltip-word:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+            bottom: 125%;
+        }
+
+        .tt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tt-label {
+            opacity: 0.7;
+            font-family: monospace;
+            font-size: 0.8em;
+        }
+        
+        .tt-val {
+            font-weight: bold;
+        }
+
+        /* Color coding for POS tags */
+        .pos-NOUN, .pos-PROPN { background-color: #2e5c3e; color: #a3e8b7; }
+        .pos-VERB, .pos-AUX { background-color: #722d36; color: #ffb4ab; }
+        .pos-ADJ { background-color: #5b4011; color: #ffdc9c; }
+        .pos-ADP { background-color: #4b3061; color: #e4b8ff; }
+        .pos-PUNCT, .pos-SYM { background-color: #2a2a2a; color: #9e9e9e; }
+        .pos-NUM { background-color: #1a4d6b; color: #9cd4ff; }
+        .pos-PRON, .pos-DET { background-color: #284777; color: #d6e3ff; }
+
+        /* Data View Styles */
+        .data-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            background-color: var(--md-sys-color-surface-container-high);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .data-table th {
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface-variant);
+            background-color: var(--md-sys-color-surface-container);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: rgba(225, 226, 232, 0.04);
+        }
+
+        .data-index {
+            color: var(--md-sys-color-outline);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .data-controls {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            padding: 16px;
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 12px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .data-control-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface);
+            user-select: none;
+        }
+
+        .data-control-label input {
+            accent-color: var(--md-sys-color-primary);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .hide-col-pos .col-pos { display: none; }
+        .hide-col-dep .col-dep { display: none; }
+        .hide-col-ner .col-ner { display: none; }
+
+        /* SVG Dependency specific overrides */
+        svg {
+            max-width: 100%;
+        }
+
+        .displacy-token {
+            fill: var(--md-sys-color-on-surface) !important;
+        }
+
+        .displacy-tag {
+            fill: var(--md-sys-color-primary) !important;
+        }
+
+        .displacy-arc {
+            stroke: var(--md-sys-color-on-surface-variant) !important;
+        }
+
+        .displacy-label {
+            fill: var(--md-sys-color-on-surface-variant) !important;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--md-sys-color-outline-variant);
+            border-radius: 100px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--md-sys-color-outline);
+        }
+    </style>
+    <script type="text/javascript" src="{{ url_for("static", filename="vendor/vis-network.min.js") }}"></script>
+    {% if online_map %}
+    <link rel="stylesheet" href="{{ url_for("static", filename="vendor/leaflet.css") }}" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="{{ url_for("static", filename="vendor/leaflet.js") }}" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    {% endif %}
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-title">Semaino Results</div>
+        <div class="topbar-actions">
+            <button class="btn-action primary" id="btn-save" onclick="saveAnalysis('{{ task_id }}')">Save Analysis</button>
+            <a href="/" class="btn-action">← Back to Upload</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% set friendly_names = {
+    'PER': 'Person',
+    'ORG': 'Organisation',
+    'LOC': 'Location',
+    'GPE': 'Geopolitical Entity',
+    'FAC': 'Facility',
+    'DATE': 'Date',
+    'NORP': 'Nat/Rel/Pol Group',
+    'LAW': 'Law/Legal Document',
+    'EVENT': 'Event',
+    'MONEY': 'Money',
+    'PERCENT': 'Percentage',
+    'QUANTITY': 'Quantity',
+    'ORDINAL': 'Ordinal',
+    'CARDINAL': 'Cardinal',
+    'WORK_OF_ART': 'Work of Art',
+    'LANGUAGE': 'Language',
+    'PRODUCT': 'Product',
+    'TIME': 'Time',
+    'MISC': 'Miscellaneous'
+} %}
+<div class="sidebar">
+            <h2>🏷️ Entities</h2>
+            {% for label, items in grouped_entities.items() %}
+            <details>
+                <summary>
+                    <div class="category-header">
+                        <div>
+                            <input type="checkbox" class="category-toggle" data-category="{{ label }}" checked
+                                onclick="toggleCategory(event, '{{ label }}')">
+                            <span>{{ friendly_names.get(label, label) }} ({{ label }})</span>
+                        </div>
+                        <span style="opacity:0.5; font-size: 0.8rem;">{{ items|length }}</span>
+                    </div>
+                </summary>
+                <ul id="list-{{ label }}">
+                    {% for item_text, item_id in items %}
+                    <li><a href="javascript:void(0)" onclick="scrollToEntity({{ item_id }})">{{ item_text }}</a></li>
+                    {% endfor %}
+                </ul>
+            </details>
+            {% endfor %}
+        </div>
+
+        <div class="main">
+            <div class="tabs">
+                <div class="tab active" id="tab-ner" onclick="switchTab('ner')">Named Entities</div>
+                <div class="tab" id="tab-dep" onclick="switchTab('dep')">Dependency & POS</div>
+                <div class="tab" id="tab-mindmap" onclick="switchTab('mindmap')">Entity Mindmap</div>
+                {% if online_map %}<div class="tab" id="tab-geomap" onclick="switchTab('geomap')">Geographic Map</div>{% endif %}
+                <!-- Archived Tabs -->
+                <!-- <div class="tab" id="tab-data" onclick="switchTab('data')">Data View</div> -->
+                <!-- <div class="tab" id="tab-all" onclick="switchTab('all')">All Metadata Inline</div> -->
+            </div>
+
+            <div class="view-content active" id="view-ner">
+                <div id="interactive-text-container">
+                    <div class="ner-layout-wrapper" style="display: flex; gap: 24px; max-width: 1200px; margin: 0 auto; align-items: flex-start;">
+                        <div class="document-card" style="flex: 1; margin: 0; max-width: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); cursor: pointer; width: fit-content; margin-bottom: 0;">
+                            <input type="checkbox" id="toggle-interactive-arrows">
+                            Enable Interactive Dependency Arrows
+                        </label>
+                        <div class="text-size-control" title="Text size (remembered in this browser)">
+                            <span>Text size</span>
+                            <button type="button" class="text-size-btn" id="text-size-down" onclick="changeTextSize(-1)" aria-label="Smaller text">A&minus;</button>
+                            <input type="range" id="text-size-range" min="0.8" max="1.8" step="0.05" value="1.05" oninput="setTextSize(this.value)" aria-label="Text size">
+                            <button type="button" class="text-size-btn" id="text-size-up" onclick="changeTextSize(1)" aria-label="Larger text" style="font-size: 1rem;">A+</button>
+                            <span id="text-size-value" style="min-width: 3.2em; text-align: right;">100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-ner-canvas" style="position: relative; line-height: 2.2; direction: ltr; font-size: 1.05rem; color: var(--md-sys-color-on-surface);">
+                        <svg id="custom-arrow-canvas" style="position: absolute; top: 0; left: 0; min-width: 100%; min-height: 100%; pointer-events: none; z-index: 100;">
+                            <defs>
+                                <marker id="custom-arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                                    <polygon id="custom-arrowhead-polygon" points="0 0, 8 3, 0 6" fill="#FF9800" />
+                                </marker>
+                            </defs>
+                            <path id="custom-arrow-path" d="" fill="none" stroke="#FF9800" stroke-width="2" marker-end="url(#custom-arrowhead)" opacity="0" style="transition: opacity 0.15s;" />
+                            <text id="custom-arrow-label" x="0" y="0" fill="#FF9800" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle" opacity="0" style="transition: opacity 0.15s; pointer-events: none; text-shadow: 0 0 4px var(--md-sys-color-surface-container);"></text>
+                        </svg>
+
+                        {% for paragraph in consolidated_paragraphs %}
+                            {% set p_idx = loop.index %}
+                            <div class="displacy-para" style="border-left: 4px solid #5a9df8; padding-left: 16px; margin-bottom: 24px; background: rgba(90, 157, 248, 0.03); border-radius: 0 8px 8px 0; padding-top: 12px; padding-bottom: 12px;">
+                                <div style="font-size: 0.7rem; font-weight: bold; color: #5a9df8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Paragraph {{ p_idx }}</div>
+                                <p style="margin: 0;">
+                                {% for sentence in paragraph %}
+                                    {% set s_idx = loop.index %}
+                                    {% for tok in sentence %}
+                                        {% if tok.is_ent %}
+                                            <mark class="custom-ner-word tp-ent" id="cner-w-{{p_idx}}-{{s_idx}}-{{tok.id}}" data-ent-id="{{ tok.ent_id }}" data-head-id="cner-w-{{p_idx}}-{{s_idx}}-{{tok.head_id}}" data-dep="{{ tok.dep }}" data-entity="{{ tok.ner }}" style="background: #e4e7d2; border-radius: 0.35em; padding: 0.25em 0.4em; margin: 0 0.15em; line-height: 1; display: inline-block; cursor: pointer; color: black; border: 1px solid transparent; transition: all 0.2s;">
+                                                {{ tok.text }}
+                                                <span style="font-size: 0.75em; font-weight: bold; line-height: 1; vertical-align: middle; margin-left: 0.3rem; text-transform: uppercase; color: #666;">{{ tok.ner }}</span>
+                                            </mark>
+                                        {% elif tok.pos not in ["PUNCT", "SYM"] %}
+                                            <span class="custom-ner-word" id="cner-w-{{p_idx}}-{{s_idx}}-{{tok.id}}" data-head-id="cner-w-{{p_idx}}-{{s_idx}}-{{tok.head_id}}" data-dep="{{ tok.dep }}" style="cursor: pointer; display: inline-block; padding: 0 0.15em; border-radius: 4px; border: 1px solid transparent; transition: all 0.2s;">{{ tok.text }}</span>
+                                        {% else %}
+                                            <span style="display: inline-block; margin-right: 0.15em;">{{ tok.text }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="minimap-container" style="width: 160px; flex-shrink: 0; position: sticky; top: 0; height: calc(100vh - 140px); border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-outline-variant); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <div style="font-size: 0.65rem; font-weight: 700; padding: 10px; border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface-variant); z-index: 2; background: inherit; letter-spacing: 1.5px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>MINIMAP</span>
+                        <button onclick="toggleMinimapView(this)" style="background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 4px; font-size: 0.55rem; cursor: pointer; padding: 2px 4px; color: var(--md-sys-color-on-surface-variant); font-weight: bold;">BLOCK VIEW</button>
+                    </div>
+                    <div style="flex: 1; position: relative; overflow: hidden; cursor: pointer; background: var(--md-sys-color-surface);" class="minimap-track">
+                        {% set entity_colours = {'ORG': '#7aecec', 'PER': '#aa9cfc', 'LOC': '#ff9561', 'GPE': '#ff9561', 'LAW': '#ff8197', 'DATE': '#bfe1d9', 'NORP': '#c887fb', 'FAC': '#9cc9cc'} %}
+                        <div class="minimap-content minimap-content-block" data-scale="1" style="position: absolute; top: 0; left: 0; width: 100%; padding: 12px; box-sizing: border-box; pointer-events: none; display: none;">
+                            {% for paragraph in consolidated_paragraphs %}
+                            {% set p_idx = loop.index %}
+                            <div style="border: 2px solid #5a9df8; padding: 4px; margin-bottom: 8px; border-radius: 4px; line-height: 1;">
+                                {% for sentence in paragraph %}
+                                <div style="border: 1px solid #6dd58c; padding: 2px; margin-bottom: 4px; border-radius: 2px; display: inline-block;">
+                                    {% set s_idx = loop.index %}
+                                    {% for tok in sentence %}
+                                        {% if tok.is_ent %}
+                                            <div class="mm-word mm-ent" data-entity="{{ tok.ner }}" data-ent-id="{{ tok.ent_id }}" style="background-color: {{ entity_colours.get(tok.ner, '#e4e7d2') }}; width: 6px; height: 12px; display: inline-block; margin: 1px; border-radius: 1px; pointer-events: auto; cursor: pointer; transition: transform 0.1s;" title="{{ tok.text }} ({{tok.ner}})" onmouseenter="highlightEntity('cner-w-{{p_idx}}-{{s_idx}}-{{tok.id}}', this, true)" onmouseleave="highlightEntity('cner-w-{{p_idx}}-{{s_idx}}-{{tok.id}}', this, false)"></div>
+                                        {% elif tok.pos not in ["PUNCT", "SYM"] %}
+                                            <div class="mm-word" style="width: 4px; height: 10px; background-color: #5f6368; display: inline-block; margin: 1px; border-radius: 1px; pointer-events: auto;" title="{{ tok.text }}" onmouseenter="highlightEntity('cner-w-{{p_idx}}-{{s_idx}}-{{tok.id}}', this, true)" onmouseleave="highlightEntity('cner-w-{{p_idx}}-{{s_idx}}-{{tok.id}}', this, false)"></div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Filled on load with an id-free clone of .custom-ner-canvas so it mirrors the main text exactly -->
+                        <div class="minimap-content minimap-content-text active" data-scale="0.15" style="position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; color: var(--md-sys-color-on-surface); display: block;"></div>
+                        <div class="minimap-viewport" style="position: absolute; top: 0; left: 0; right: 0; height: 100px; background: rgba(138, 180, 248, 0.15); border: 1px solid rgba(138, 180, 248, 0.5); border-radius: 4px; pointer-events: none;"></div>
+                    </div>
+                </div>
+                </div> <!-- Closes .ner-layout-wrapper -->
+                </div> <!-- Closes #interactive-text-container -->
+                </div>
+<div class="view-content" id="view-mindmap">
+<div class="document-card" style="margin-top: 24px; max-width: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <div>
+                            <h2 style="margin-top: 0; margin-bottom: 8px;">Semantic Relationship Mindmap</h2>
+                            <p style="font-size: 0.95rem; color: var(--md-sys-color-on-surface-variant); margin: 0; line-height: 1.5;">
+                                A force-directed network graph exploring the semantic architecture of the text.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <select id="mindmap-filter" style="display: block; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--md-sys-color-outline); background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); font-size: 0.9rem; cursor: pointer;" onchange="applyMindmapFilter()">
+                                <option value="default">Default Summary (Entities + Core Grammar)</option>
+                                <option value="entities_only">Entities & Inter-Entity Relationships Only</option>
+                                <option value="entities_neighbors">Entities & Direct Neighbors</option>
+                                <option value="non_entities">Non-Entities (Core Grammar Only)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="mindmap-network" style="width: 100%; height: 700px; border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; background-color: var(--md-sys-color-surface); display: block;"></div>
+                    </div>
+</div>
+{% if online_map %}
+<div class="view-content" id="view-geomap">
+<div id="geographic-map-container" style="display: block; margin-top: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 style="margin: 0; color: var(--md-sys-color-on-surface);">Geographic Entities (GPE, FAC, LOC)</h3>
+                            <span id="geo-map-status" style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant);"></span>
+                        </div>
+                        <div id="geographic-map" style="width: 100%; height: 500px; border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; z-index: 1;"></div>
+                    </div>
+                </div>
+{% endif %}
+
+<div class="view-content" id="view-dep">
+                <div class="document-card">
+                    <h2 style="margin-top: 0;">POS &amp; Dependency Analysis</h2>
+                    <p style="font-size: 0.95rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 16px; line-height: 1.5;">
+                        A word-by-word reference for the grammar of every sentence. Each word shows its position as
+                        <strong>paragraph.sentence.word</strong> (the same numbering as the Named Entities view),
+                        its part of speech and its dependency relation. Hover over a word to see the word it depends on.
+                    </p>
+                    <div class="dep-note">
+                        <span>This view is a static reference. To see arrows drawn between words, open
+                            <strong>Named Entities</strong>, tick <em>Enable Interactive Dependency Arrows</em> and hover over a word.</span>
+                        <button type="button" class="dep-note-btn" id="dep-show-arrows" onclick="showDependencyArrows()">Show arrows in Named Entities</button>
+                    </div>
+
+                    {% for paragraph in grouped_paragraphs %}
+                    {% set p_idx = loop.index %}
+                    <section class="pos-paragraph-group">
+                        <div class="pos-paragraph-label">Paragraph {{ p_idx }}</div>
+                        {% for sentence in paragraph %}
+                        {% set s_idx = loop.index %}
+                        {% if sentence|length > 0 %}
+                        <div class="pos-paragraph">
+                            <span class="pos-sentence-label" title="Paragraph {{ p_idx }}, sentence {{ s_idx }}">S{{ s_idx }}</span>
+                            {% for tok in sentence %}
+                                {% set w_idx = loop.index %}
+                                {% if tok.pos not in ["PUNCT", "SYM"] %}
+                                <mark class="pos-mark" data-loc="{{ p_idx }}.{{ s_idx }}.{{ w_idx }}"
+                                      title="Paragraph {{ p_idx }} · Sentence {{ s_idx }} · Word {{ w_idx }}&#10;{% if tok.head_id %}Depends on word {{ tok.head_id }}: {{ tok.head }}{% else %}Root of the sentence{% endif %}">
+                                    <span class="pos-index">{{ p_idx }}.{{ s_idx }}.{{ w_idx }}</span>
+                                    <span style="font-weight: 500;">{{ tok.text }}</span>
+                                    <div class="pos-metadata">
+                                        <span class="pos-tag pos-{{ tok.pos }}">{{ tok.pos }}</span>
+                                        <span class="pos-dep-tag">{{ tok.dep }}{% if tok.head_id %} &rarr; {{ tok.head_id }}{% endif %}</span>
+                                    </div>
+                                </mark>
+                                {% else %}
+                                <span style="vertical-align: top; line-height: 4.2;">{{ tok.text }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </section>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let geoMapApproved = false;
+        function switchTab(tabId) {
+            const tab = document.getElementById('tab-' + tabId);
+            const view = document.getElementById('view-' + tabId);
+            if (!tab || !view) return;
+
+            if (tabId === 'geomap' && !geoMapApproved) {
+                if (!confirm("To map locations, Semaino needs to query OpenStreetMap. This sends the place names found in your text over the internet and downloads map tiles.\n\nTo remove this feature entirely, start Semaino with: semaino serve --offline-map\n\nDo you want to proceed?")) {
+                    return;
+                }
+                geoMapApproved = true;
+            }
+
+            // Show the view first: the mindmap and Leaflet both need a visible, measurable container.
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
+            tab.classList.add('active');
+            view.classList.add('active');
+
+            if (tabId === 'mindmap' && !globalNetwork) {
+                toggleMindmap();
+            }
+            if (tabId === 'geomap') {
+                if (geoMap) {
+                    geoMap.invalidateSize();
+                } else {
+                    toggleGeoMap();
+                }
+            }
+        }
+
+        function switchToNER() {
+            if (!document.getElementById('tab-ner').classList.contains('active')) {
+                switchTab('ner');
+            }
+        }
+
+        function scrollToEntity(entId) {
+            switchToNER();
+            // Wait one frame so the Named Entities view has been laid out before measuring.
+            requestAnimationFrame(() => {
+                const view = document.getElementById('view-ner');
+                const marks = view.querySelectorAll(`[data-ent-id="${entId}"]`);   // main text, minimap clone, block minimap
+                const target = view.querySelector(`.custom-ner-canvas [data-ent-id="${entId}"]`);
+                if (!target) return;
+
+                const offset = target.getBoundingClientRect().top - view.getBoundingClientRect().top;
+                view.scrollTo({ top: view.scrollTop + offset - view.clientHeight / 2, behavior: 'smooth' });
+
+                view.querySelectorAll('.entity-selected').forEach(el => el.classList.remove('entity-selected'));
+                marks.forEach(el => el.classList.add('entity-selected'));
+            });
+        }
+        function toggleCategory(event, category) {
+            // Prevent details from toggling when clicking the checkbox
+            event.stopPropagation();
+
+            const checkbox = event.target;
+            const isChecked = checkbox.checked;
+
+            // Toggle visibility in the list
+            const ul = document.getElementById(`list-${category}`);
+            ul.style.display = isChecked ? 'block' : 'none';
+
+            // Find all mark spans that match this category and toggle classes
+            // We use attribute selector based on data-entity
+            const marks = document.querySelectorAll(`[data-entity="${category}"]`);
+            marks.forEach(mark => {
+                if (isChecked) {
+                    mark.classList.remove('filter-hidden');
+                } else {
+                    mark.classList.add('filter-hidden');
+                }
+            });
+            document.getElementById('view-ner').dispatchEvent(new Event('scroll'));
+        }
+
+        function toggleMinimapView(btn) {
+            const container = btn.closest('.minimap-container');
+            const textMap = container.querySelector('.minimap-content-text');
+            const blockMap = container.querySelector('.minimap-content-block');
+            
+            if (textMap.style.display !== 'none') {
+                textMap.style.display = 'none';
+                blockMap.style.display = 'block';
+                btn.textContent = 'TEXT VIEW';
+            } else {
+                textMap.style.display = 'block';
+                blockMap.style.display = 'none';
+                btn.textContent = 'BLOCK VIEW';
+            }
+            
+            const viewContent = container.closest('.view-content');
+            if (viewContent) {
+                viewContent.dispatchEvent(new Event('scroll'));
+            }
+        }
+
+        function highlightEntity(id, blockEl, isEnter) {
+            // Highlight the block in minimap
+            if (isEnter) {
+                blockEl.style.transform = 'scale(1.8)';
+                blockEl.style.boxShadow = '0 0 6px white';
+                blockEl.style.zIndex = '10';
+                blockEl.style.position = 'relative';
+            } else {
+                blockEl.style.transform = '';
+                blockEl.style.boxShadow = '';
+                blockEl.style.zIndex = '';
+                blockEl.style.position = '';
+            }
+            
+            // Highlight text in Interactive View
+            const el = document.getElementById(id);
+            if (el) {
+                if (isEnter) {
+                    el.style.outline = '3px solid #FF9800';
+                    el.style.outlineOffset = '2px';
+                    el.style.backgroundColor = '#FFB4AB';
+                    el.style.color = '#000';
+                    el.style.zIndex = '10';
+                    el.style.position = 'relative';
+                } else {
+                    el.style.outline = '';
+                    el.style.outlineOffset = '';
+                    el.style.backgroundColor = '';
+                    el.style.color = '';
+                    el.style.zIndex = '';
+                    el.style.position = '';
+                }
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const depTranslations = {
+                'nsubj': 'Subject',
+                'obj': 'Object',
+                'iobj': 'Indirect Object',
+                'csubj': 'Clausal Subject',
+                'ccomp': 'Clausal Complement',
+                'xcomp': 'Open Clausal Comp.',
+                'obl': 'Oblique Nominal',
+                'vocative': 'Vocative',
+                'expl': 'Expletive',
+                'dislocated': 'Dislocated',
+                'advcl': 'Adverbial Clause Comp.',
+                'advmod': 'Adverb Modifier',
+                'discourse': 'Discourse',
+                'aux': 'Auxiliary',
+                'cop': 'Copula',
+                'mark': 'Marker',
+                'nmod': 'Noun Modifier',
+                'appos': 'Appositional Modifier',
+                'nummod': 'Numeric Modifier',
+                'acl': 'Clausal Modifier',
+                'amod': 'Adjective Modifier',
+                'det': 'Determiner',
+                'clf': 'Classifier',
+                'case': 'Case / Preposition',
+                'conj': 'Conjunct',
+                'cc': 'Coordinating Conj.',
+                'fixed': 'Fixed Expression',
+                'flat': 'Flat Name',
+                'compound': 'Compound',
+                'list': 'List',
+                'parataxis': 'Parataxis',
+                'orphan': 'Orphan',
+                'goeswith': 'Goes With',
+                'reparandum': 'Reparandum',
+                'punct': 'Punctuation',
+                'root': 'Root / Main Word',
+                'ROOT': 'Root / Main Word'
+            };
+
+            // Interactive dependency arrows for the main text (enabled by the checkbox)
+            const cCanvas = document.querySelector('.custom-ner-canvas');
+            const cSvgCanvas = document.getElementById('custom-arrow-canvas');
+            const cArrowPath = document.getElementById('custom-arrow-path');
+            const cArrowPolygon = document.getElementById('custom-arrowhead-polygon');
+            const cArrowLabel = document.getElementById('custom-arrow-label');
+            let cCurrentHead = null;
+            
+            document.querySelectorAll('.custom-ner-word').forEach(word => {
+                word.addEventListener('mouseenter', (e) => {
+                    if (!document.getElementById('toggle-interactive-arrows').checked) return;
+                    const headId = word.getAttribute('data-head-id');
+                    if (!headId) return;
+                    
+                    const headEl = document.getElementById(headId);
+                    if (!headEl || headEl === word) return;
+                    
+                    const rawDep = word.getAttribute('data-dep') || '';
+                    const depLabel = depTranslations[rawDep] || rawDep;
+                    cCurrentHead = headEl;
+                    
+                    // Dynamic Colors and Target Glow
+                    if (headEl.classList.contains('tp-ent')) {
+                        cArrowPath.setAttribute('stroke', '#FF1744');
+                        cArrowPolygon.setAttribute('fill', '#FF1744');
+                        cArrowLabel.setAttribute('fill', '#FF1744');
+                        headEl.style.boxShadow = '0 0 10px 3px rgba(255, 23, 68, 0.8)';
+                        headEl.style.transform = 'scale(1.2)';
+                        headEl.style.borderColor = '#FF1744';
+                    } else {
+                        cArrowPath.setAttribute('stroke', '#FF9800');
+                        cArrowPolygon.setAttribute('fill', '#FF9800');
+                        cArrowLabel.setAttribute('fill', '#FF9800');
+                        headEl.style.boxShadow = '0 0 8px 2px rgba(255, 152, 0, 0.8)';
+                        headEl.style.transform = 'scale(1.15)';
+                        headEl.style.borderColor = '#FF9800';
+                    }
+                    
+                    headEl.style.zIndex = '10';
+                    headEl.style.position = 'relative';
+                    
+                    cSvgCanvas.style.height = cCanvas.scrollHeight + 'px';
+                    cSvgCanvas.style.width = cCanvas.scrollWidth + 'px';
+
+                    const cRect = cCanvas.getBoundingClientRect();
+                    const wRect = word.getBoundingClientRect();
+                    const hRect = headEl.getBoundingClientRect();
+
+                    const startX = (wRect.left - cRect.left) + cCanvas.scrollLeft + (wRect.width / 2);
+                    const startY = (wRect.top - cRect.top) + cCanvas.scrollTop;
+                    const endX = (hRect.left - cRect.left) + cCanvas.scrollLeft + (hRect.width / 2);
+                    const endY = (hRect.bottom - cRect.top) + cCanvas.scrollTop;
+                    
+                    const rawOffset = Math.abs(startX - endX) * 0.3 + 30;
+                    const maxUpCurve = startY - 15; 
+                    const startCurveOffset = Math.min(rawOffset, maxUpCurve > 0 ? maxUpCurve : rawOffset);
+                    const maxDownCurve = cCanvas.scrollHeight - endY - 15;
+                    const endCurveOffset = Math.min(rawOffset, maxDownCurve > 0 ? maxDownCurve : rawOffset);
+
+                    const pathD = `M ${startX} ${startY} C ${startX} ${startY - startCurveOffset}, ${endX} ${endY + endCurveOffset}, ${endX} ${endY}`;
+                    
+                    const midX = startX + (endX - startX) / 2;
+                    const midY = (startY - (startCurveOffset/2)) + (endY - startY) / 2;
+                    
+                    cArrowLabel.setAttribute('x', midX);
+                    cArrowLabel.setAttribute('y', midY - 10);
+                    cArrowLabel.textContent = depLabel;
+                    cArrowLabel.style.opacity = '1';
+
+                    cArrowPath.setAttribute('d', pathD);
+                    cArrowPath.style.opacity = '1';
+                });
+                
+                word.addEventListener('mouseleave', () => {
+                    cArrowPath.style.opacity = '0';
+                    cArrowLabel.style.opacity = '0';
+                    if (cCurrentHead) {
+                        cCurrentHead.style.boxShadow = '';
+                        cCurrentHead.style.transform = '';
+                        cCurrentHead.style.borderColor = 'transparent';
+                        cCurrentHead.style.zIndex = '';
+                        cCurrentHead.style.position = '';
+                        cCurrentHead = null;
+                    }
+                });
+            });
+        });
+        // Minimap engine.
+        // Text view: an id-free clone of the main text, scaled so its width matches the track.
+        // Block view: one block per word. Both map positions through the main text canvas itself,
+        // so the viewport box frames exactly what is on screen.
+        function buildTextMinimap(view) {
+            const source = view.querySelector('.custom-ner-canvas');
+            const mirror = view.querySelector('.minimap-content-text');
+            if (!source || !mirror) return;
+            const clone = source.cloneNode(true);
+            clone.classList.replace('custom-ner-canvas', 'minimap-mirror-canvas');
+            clone.querySelectorAll('svg').forEach(el => el.remove());            // dependency-arrow overlay
+            clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));  // no duplicate ids
+            mirror.replaceChildren(clone);
+        }
+
+        function rescaleTextMinimap(view) {
+            const source = view.querySelector('.custom-ner-canvas');
+            const mirror = view.querySelector('.minimap-content-text');
+            const track = view.querySelector('.minimap-track');
+            if (!source || !mirror || !track || !source.clientWidth || !track.clientWidth) return;
+            const scale = track.clientWidth / source.clientWidth;
+            mirror.style.width = source.clientWidth + 'px';   // same width => same line wrapping => same height
+            mirror.dataset.scale = String(scale);
+        }
+
+        document.querySelectorAll('.view-content').forEach(view => {
+            const track = view.querySelector('.minimap-track');
+            if (!track) return;
+            const viewport = view.querySelector('.minimap-viewport');
+            const source = view.querySelector('.custom-ner-canvas');
+            let state = { shift: 0, k: 1, canvasTop: 0 };   // remembered for click-to-seek
+
+            const activeMinimap = () => {
+                const textMap = view.querySelector('.minimap-content-text');
+                const blockMap = view.querySelector('.minimap-content-block');
+                return (textMap && textMap.style.display !== 'none') ? textMap : blockMap;
+            };
+
+            const updateMinimap = () => {
+                if (!view.classList.contains('active') || !source) return;
+                const content = activeMinimap();
+                if (!content) return;
+                const isText = content.classList.contains('minimap-content-text');
+                if (isText) rescaleTextMinimap(view);
+
+                const sourceH = source.offsetHeight;
+                const trackH = track.clientHeight;
+                if (!sourceH || !trackH) return;
+
+                const scale = isText ? parseFloat(content.dataset.scale || '1') : 1;
+                const contentH = isText ? sourceH * scale : content.scrollHeight;
+                const k = contentH / sourceH;                      // minimap px per main-text px
+                const canvasTop = source.getBoundingClientRect().top - view.getBoundingClientRect().top + view.scrollTop;
+                const visibleStart = view.scrollTop - canvasTop;   // main-text px scrolled past the canvas top
+
+                const maxScroll = Math.max(1, view.scrollHeight - view.clientHeight);
+                const progress = Math.min(1, Math.max(0, view.scrollTop / maxScroll));
+                const shift = contentH > trackH ? -progress * (contentH - trackH) : 0;
+
+                const vpH = Math.max(12, Math.min(trackH, view.clientHeight * k));
+                const vpTop = Math.min(trackH - vpH, Math.max(0, visibleStart * k + shift));
+                viewport.style.display = 'block';
+                viewport.style.height = vpH + 'px';
+                viewport.style.top = vpTop + 'px';
+
+                content.style.top = '0px';
+                content.style.transform = isText
+                    ? `scale(${scale}) translateY(${shift / scale}px)`
+                    : `translateY(${shift}px)`;
+                state = { shift, k, canvasTop };
+            };
+
+            buildTextMinimap(view);
+            view.addEventListener('scroll', updateMinimap, { passive: true });
+            window.addEventListener('resize', updateMinimap);
+
+            // Re-sync when this view becomes the active tab
+            new MutationObserver(() => {
+                if (view.classList.contains('active')) requestAnimationFrame(updateMinimap);
+            }).observe(view, { attributes: true, attributeFilter: ['class'] });
+
+            // Click the minimap to jump to that point in the text
+            track.addEventListener('click', (e) => {
+                const y = e.clientY - track.getBoundingClientRect().top;
+                const canvasY = (y - state.shift) / state.k;
+                view.scrollTo({ top: state.canvasTop + canvasY - view.clientHeight / 2, behavior: 'smooth' });
+            });
+
+            requestAnimationFrame(updateMinimap);
+        });
+
+        // Text size of the Named Entities view (the minimap mirrors it, so it is rebuilt on change)
+        const TEXT_SIZE = { default: 1.05, min: 0.8, max: 1.8, step: 0.05, buttonStep: 0.1, key: 'semaino.textSize' };
+
+        function setTextSize(value, persist = true) {
+            const size = Math.min(TEXT_SIZE.max, Math.max(TEXT_SIZE.min,
+                Math.round(parseFloat(value) / TEXT_SIZE.step) * TEXT_SIZE.step));
+            if (!isFinite(size)) return;
+            const view = document.getElementById('view-ner');
+            const canvas = view.querySelector('.custom-ner-canvas');
+
+            // Keep the line in the middle of the screen in place while the text reflows
+            const canvasTop = canvas.getBoundingClientRect().top - view.getBoundingClientRect().top + view.scrollTop;
+            const anchor = canvas.offsetHeight
+                ? (view.scrollTop + view.clientHeight / 2 - canvasTop) / canvas.offsetHeight : null;
+
+            canvas.style.fontSize = size.toFixed(2) + 'rem';
+            document.getElementById('text-size-range').value = size.toFixed(2);
+            document.getElementById('text-size-value').textContent = Math.round(size / TEXT_SIZE.default * 100) + '%';
+            buildTextMinimap(view);
+
+            if (anchor !== null && canvas.offsetHeight) {
+                view.scrollTop = canvasTop + anchor * canvas.offsetHeight - view.clientHeight / 2;
+            }
+            view.dispatchEvent(new Event('scroll'));
+            if (persist) {
+                try { localStorage.setItem(TEXT_SIZE.key, size.toFixed(2)); } catch (e) { /* storage unavailable */ }
+            }
+        }
+
+        function changeTextSize(direction) {
+            const current = parseFloat(document.getElementById('text-size-range').value) || TEXT_SIZE.default;
+            setTextSize(current + direction * TEXT_SIZE.buttonStep);
+        }
+
+        (() => {
+            let saved = null;
+            try { saved = parseFloat(localStorage.getItem(TEXT_SIZE.key)); } catch (e) { /* storage unavailable */ }
+            if (saved && Math.abs(saved - TEXT_SIZE.default) > 0.001) setTextSize(saved, false);
+        })();
+
+        // From the POS & Dependency view: open Named Entities with the dependency arrows switched on
+        function showDependencyArrows() {
+            switchTab('ner');
+            document.getElementById('toggle-interactive-arrows').checked = true;
+        }
+
+        // Initialise Mindmap
+        let globalNetwork = null;
+
+        function toggleMindmap() {
+            const filterMenu = document.getElementById('mindmap-filter');
+            if (filterMenu) filterMenu.style.display = 'block';
+            setTimeout(() => {
+                initMindmap();
+            }, 100);
+        }
+
+        function applyMindmapFilter() {
+            if (globalNetwork) {
+                globalNetwork.destroy();
+                globalNetwork = null;
+            }
+            setTimeout(() => {
+                initMindmap();
+            }, 50);
+        }
+
+        function initMindmap() {
+            const container = document.getElementById('mindmap-network');
+            if (!container) return;
+
+            const tokens = [
+                {% for paragraph in consolidated_paragraphs %}
+                    {% set p_idx = loop.index %}
+                    {% for sentence in paragraph %}
+                        {% set s_idx = loop.index %}
+                        {% for tok in sentence %}
+                            {
+                                id: "cner-w-{{ p_idx }}-{{ s_idx }}-{{ tok.id }}",
+                                text: {{ tok.text|tojson|safe }},
+                                pos: "{{ tok.pos }}",
+                                dep: "{{ tok.dep }}",
+                                head_id: "cner-w-{{ p_idx }}-{{ s_idx }}-{{ tok.head_id }}",
+                                ner: "{{ tok.ner }}"
+                            },
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            ];
+
+            const validTokens = tokens.filter(t => t.pos !== 'PUNCT' && t.pos !== 'SYM');
+            
+            const filterMode = document.getElementById('mindmap-filter') ? document.getElementById('mindmap-filter').value : 'default';
+
+            const inDegree = {};
+            validTokens.forEach(t => {
+                if (t.head_id && t.head_id !== t.id) {
+                    inDegree[t.head_id] = (inDegree[t.head_id] || 0) + 1;
+                }
+            });
+
+            const sigNodes = new Set();
+            
+            if (filterMode === 'default') {
+                validTokens.forEach(t => {
+                    if (t.ner !== 'O' || (inDegree[t.id] && inDegree[t.id] >= 2) || t.dep.toLowerCase() === 'root') {
+                        sigNodes.add(t.id);
+                        if (t.head_id) sigNodes.add(t.head_id);
+                    }
+                });
+            } else if (filterMode === 'entities_only') {
+                validTokens.forEach(t => {
+                    if (t.ner !== 'O') sigNodes.add(t.id);
+                });
+            } else if (filterMode === 'entities_neighbors') {
+                validTokens.forEach(t => {
+                    if (t.ner !== 'O') {
+                        sigNodes.add(t.id);
+                        if (t.head_id) sigNodes.add(t.head_id);
+                    }
+                });
+                validTokens.forEach(t => {
+                    if (t.head_id && sigNodes.has(t.head_id)) {
+                        const headToken = validTokens.find(v => v.id === t.head_id);
+                        if (headToken && headToken.ner !== 'O') sigNodes.add(t.id);
+                    }
+                });
+            } else if (filterMode === 'non_entities') {
+                validTokens.forEach(t => {
+                    if (t.ner === 'O' && ((inDegree[t.id] && inDegree[t.id] >= 2) || t.dep.toLowerCase() === 'root')) {
+                        sigNodes.add(t.id);
+                        if (t.head_id) {
+                            const headToken = validTokens.find(v => v.id === t.head_id);
+                            if (headToken && headToken.ner === 'O') sigNodes.add(t.head_id);
+                        }
+                    }
+                });
+            }
+
+            const nodes = [];
+            const edges = [];
+
+            validTokens.forEach(t => {
+                if (!sigNodes.has(t.id)) return;
+                
+                // Extra safety: completely hide entities if non_entities mode is strictly selected
+                if (filterMode === 'non_entities' && t.ner !== 'O') return;
+
+                let color = '#5f6368';
+                if (t.ner !== 'O') {
+                    if (t.ner === 'ORG') color = '#7aecec';
+                    else if (t.ner === 'PER') color = '#aa9cfc';
+                    else if (t.ner === 'LOC' || t.ner === 'GPE') color = '#ff9561';
+                    else if (t.ner === 'LAW') color = '#ff8197';
+                    else if (t.ner === 'DATE') color = '#bfe1d9';
+                    else if (t.ner === 'NORP') color = '#c887fb';
+                    else if (t.ner === 'FAC') color = '#9cc9cc';
+                    else color = '#e4e7d2';
+                }
+
+                const weight = inDegree[t.id] || 0;
+                const size = 15 + (weight * 4); 
+                const tooltipHtml = `<div style="padding: 8px; font-family: sans-serif; background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                    <b>${t.text}</b><br/>
+                    ${t.ner !== 'O' ? `Entity: ${t.ner}<br/>` : ''}
+                    Referenced by ${weight} words
+                </div>`;
+
+                nodes.push({
+                    id: t.id,
+                    label: t.text + (t.ner !== 'O' ? `\n(${t.ner})` : ''),
+                    title: tooltipHtml,
+                    size: Math.min(size, 60),
+                    color: { background: color, border: '#333' },
+                    font: { color: '#E1E2E8', size: 14, strokeWidth: 2, strokeColor: '#111318' } // High contrast font
+                });
+
+                if (t.head_id && t.head_id !== t.id && sigNodes.has(t.head_id)) {
+                    if (filterMode === 'non_entities') {
+                        const headToken = validTokens.find(v => v.id === t.head_id);
+                        if (headToken && headToken.ner !== 'O') return; // Enforce non-entity bounds on edges
+                    }
+                    if (filterMode === 'entities_only') {
+                        const headToken = validTokens.find(v => v.id === t.head_id);
+                        if (!headToken || headToken.ner === 'O') return; // Enforce entity-only bounds on edges
+                    }
+                    edges.push({
+                        from: t.id,
+                        to: t.head_id,
+                        label: t.dep,
+                        font: { size: 10, color: '#888', strokeWidth: 0 },
+                        color: '#666',
+                        arrows: 'to'
+                    });
+                }
+            });
+
+            const data = {
+                nodes: new vis.DataSet(nodes),
+                edges: new vis.DataSet(edges)
+            };
+
+            const options = {
+                nodes: {
+                    shape: 'dot',
+                    scaling: { min: 10, max: 60 },
+                    shadow: true
+                },
+                edges: {
+                    width: 1,
+                    smooth: { type: 'continuous' }
+                },
+                physics: {
+                    forceAtlas2Based: {
+                        gravitationalConstant: -50,
+                        centralGravity: 0.01,
+                        springLength: 100,
+                        springConstant: 0.08
+                    },
+                    maxVelocity: 50,
+                    solver: 'forceAtlas2Based',
+                    timestep: 0.35,
+                    stabilization: {
+                        enabled: true,
+                        iterations: 150,
+                        updateInterval: 25
+                    }
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 100,
+                    zoomView: true
+                }
+            };
+
+            try {
+                globalNetwork = new vis.Network(container, data, options);
+                
+                // Click to scroll to word
+                globalNetwork.on("click", function (params) {
+                    if (params.nodes.length > 0) {
+                        const nodeId = params.nodes[0];
+                        const wordEl = document.getElementById(nodeId);
+                        if (wordEl) {
+                            switchToNER();
+                            const view = document.getElementById('view-ner');
+                            const offset = wordEl.getBoundingClientRect().top - view.getBoundingClientRect().top;
+                            view.scrollTo({ top: view.scrollTop + offset - view.clientHeight / 2, behavior: 'smooth' });
+                            
+                            // Highlight the word
+                            const oldBg = wordEl.style.backgroundColor;
+                            const oldShadow = wordEl.style.boxShadow;
+                            const oldColor = wordEl.style.color;
+                            
+                            wordEl.style.backgroundColor = '#FF1744';
+                            wordEl.style.color = '#FFFFFF';
+                            wordEl.style.boxShadow = '0 0 15px #FF1744';
+                            
+                            setTimeout(() => {
+                                wordEl.style.backgroundColor = oldBg;
+                                wordEl.style.color = oldColor;
+                                wordEl.style.boxShadow = oldShadow;
+                            }, 2000);
+                        }
+                    }
+                });
+                
+            } catch (err) {
+                container.innerHTML = `<div style="padding: 32px; color: #ffb4ab; font-family: monospace;">Error loading mindmap: ${err.message}.</div>`;
+                console.error(err);
+            }
+        }
+
+        {% if online_map %}
+        let geoMap = null;
+        async function toggleGeoMap() {
+            const statusText = document.getElementById('geo-map-status');
+
+            if (geoMap) {
+                return; // Already loaded
+            }
+
+            // Extract location entities from backend grouped_entities
+            const locEntities = {};
+            {% for ent_type in ['GPE', 'FAC', 'LOC'] %}
+                {% if ent_type in grouped_entities %}
+                    {% for ent in grouped_entities[ent_type] %}
+                        {
+                            const text = {{ ent[0] | tojson }};
+                            if (locEntities[text]) {
+                                locEntities[text].count++;
+                            } else {
+                                locEntities[text] = { count: 1, type: "{{ ent_type }}" };
+                            }
+                        }
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+            const uniqueLocations = Object.keys(locEntities);
+            if (uniqueLocations.length === 0) {
+                statusText.textContent = "No spatial entities (GPE, FAC, LOC) found in text.";
+                return;
+            }
+
+            statusText.textContent = `Initialising map...`;
+
+            // Init Leaflet map centered on Greece
+            geoMap = L.map('geographic-map').setView([38.2736, 23.8153], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(geoMap);
+
+            let processed = 0;
+            let found = 0;
+
+            const delay = ms => new Promise(res => setTimeout(res, ms));
+
+            for (const loc of uniqueLocations) {
+                try {
+                    statusText.textContent = `Geocoding ${processed + 1} of ${uniqueLocations.length}...`;
+                    // Fetch from Nominatim API
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(loc)}&format=json&limit=1`);
+                    const data = await response.json();
+
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        const count = locEntities[loc].count;
+                        
+                        // Calculate radius based on count
+                        const radius = Math.min(Math.max(count * 5, 8), 40);
+
+                        L.circleMarker([lat, lon], {
+                            radius: radius,
+                            fillColor: "#ff9561",
+                            color: "#d93025",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.6
+                        }).bindPopup(`<b>${loc}</b><br>Type: ${locEntities[loc].type}<br>Mentions: ${count}`)
+                        .addTo(geoMap);
+                        
+                        found++;
+                    }
+                } catch (error) {
+                    console.error("Geocoding failed for:", loc, error);
+                }
+                
+                processed++;
+                // Wait 1 second between requests to respect Nominatim rate limit
+                if (processed < uniqueLocations.length) {
+                    await delay(1000);
+                }
+            }
+            
+            statusText.textContent = `Found coordinates for ${found} of ${uniqueLocations.length} locations.`;
+        }
+        {% endif %}
+        
+        async function saveAnalysis(taskId) {
+            const title = prompt("Enter a title for this analysis:", "My Document");
+            if (!title) return;
+            
+            const btn = document.getElementById('btn-save');
+            const originalText = btn.innerText;
+            btn.innerText = 'Saving...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/save_analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task_id: taskId, title: title })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    btn.innerText = 'Saved!';
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                } else {
+                    alert('Error: ' + result.error);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                alert('Error saving analysis: ' + error);
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+    </script>
+</body>
+</html>

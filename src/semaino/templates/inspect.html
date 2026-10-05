@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspect OCR Results - Semaino</title>
+    <link href="{{ url_for("static", filename="vendor/bootstrap.min.css") }}" rel="stylesheet">
+    <style>
+        :root {
+            --md-sys-color-primary: #5a9df8;
+            --md-sys-color-surface: #1e1e2e;
+            --md-sys-color-on-surface: #e4e4e7;
+            --md-sys-color-background: #12121c;
+            --md-sys-color-error: #f87171;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-surface);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--md-sys-color-surface);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: white;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .pane {
+            flex: 1;
+            background: var(--md-sys-color-surface);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pane-header {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #a1a1aa;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pane-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .markdown-editor {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface);
+            padding: 1.5rem;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+
+        .markdown-editor:focus {
+            box-shadow: inset 0 0 0 2px rgba(90, 157, 248, 0.3);
+        }
+
+        .btn-proceed {
+            background: linear-gradient(135deg, #5a9df8 0%, #3b82f6 100%);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-proceed:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(90, 157, 248, 0.3);
+        }
+
+        .btn-proceed:active {
+            transform: translateY(1px);
+        }
+
+        /* Progress Overlay */
+        #progress-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(18, 18, 28, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(8px);
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--md-sys-color-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .progress-bar-track {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin: 1.5rem 0 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            background: var(--md-sys-color-primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            color: #a1a1aa;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Inspect OCR Results</h1>
+        <form id="proceed-form" style="margin: 0;">
+            <input type="hidden" name="model_choice" value="custom_el"> <!-- Default to custom -->
+            <button type="submit" class="btn-proceed" id="proceed-btn">
+                Proceed to Analysis
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </form>
+    </div>
+
+    <div class="main-container">
+        <div class="pane">
+            <div class="pane-header">Original Document</div>
+            <div class="pane-content">
+                <embed src="{{ url_for('uploaded_file', filename=pdf_filename) }}" class="pdf-viewer" type="application/pdf">
+            </div>
+        </div>
+
+        <div class="pane">
+            <div class="pane-header">Extracted Text (Markdown)</div>
+            <div class="pane-content">
+                <textarea id="markdown-text" class="markdown-editor" spellcheck="false">{{ markdown_text }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div id="progress-overlay">
+        <div class="progress-container">
+            <h3 style="margin-top: 0; color: white;">Running Analysis</h3>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="status-text" id="status-text">Initialising NLP engine...</div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('proceed-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('proceed-btn');
+            const overlay = document.getElementById('progress-overlay');
+            const progressFill = document.getElementById('progress-fill');
+            const statusText = document.getElementById('status-text');
+            const markdownContent = document.getElementById('markdown-text').value;
+            
+            btn.disabled = true;
+            overlay.style.display = 'flex';
+            progressFill.style.width = '0%';
+            
+            const formData = new FormData();
+            formData.append('text', markdownContent);
+            formData.append('model_choice', 'custom_el');
+            
+            try {
+                const response = await fetch('/analyse', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    statusText.textContent = "Error: " + data.error;
+                    statusText.style.color = "var(--md-sys-color-error)";
+                    btn.disabled = false;
+                    return;
+                }
+                
+                if (data.task_id) {
+                    const pollInterval = setInterval(async () => {
+                        try {
+                            const statusRes = await fetch('/status/' + data.task_id);
+                            const statusData = await statusRes.json();
+                            
+                            if (statusData.status === 'processing') {
+                                if (statusData.total > 0) {
+                                    const pct = (statusData.progress / statusData.total) * 100;
+                                    progressFill.style.width = pct + '%';
+                                    statusText.textContent = `Analysing sentence ${statusData.progress} of ${statusData.total}...`;
+                                }
+                            } else if (statusData.status === 'complete') {
+                                clearInterval(pollInterval);
+                                progressFill.style.width = '100%';
+                                statusText.textContent = "Rendering maps...";
+                                window.location.href = '/results/' + data.task_id;
+                            } else if (statusData.status === 'error') {
+                                clearInterval(pollInterval);
+                                statusText.textContent = "Error: " + (statusData.error || "Unknown error");
+                                statusText.style.color = "var(--md-sys-color-error)";
+                                btn.disabled = false;
+                            }
+                        } catch (err) {
+                            console.error("Polling error:", err);
+                        }
+                    }, 500);
+                }
+            } catch (err) {
+                statusText.textContent = "Request failed.";
+                statusText.style.color = "var(--md-sys-color-error)";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semaino Hybrid Greek Language Analyser</title>
+    <style>
+        :root {
+            /* Material 3 Dark Theme */
+            --md-sys-color-primary: #A8C7FA;
+            --md-sys-color-on-primary: #062E6F;
+            --md-sys-color-primary-container: #284777;
+            --md-sys-color-on-primary-container: #D6E3FF;
+            --md-sys-color-surface: #111318;
+            --md-sys-color-on-surface: #E1E2E8;
+            --md-sys-color-surface-container: #1E2025;
+            --md-sys-color-surface-container-high: #282A2F;
+            --md-sys-color-outline: #8E9099;
+            --md-sys-color-error: #FFB4AB;
+            --md-sys-color-on-error: #690005;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', system-ui, sans-serif;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 32px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 28px;
+            padding: 48px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            animation: fadeIn 0.4s cubic-bezier(0.2, 0, 0, 1);
+            box-sizing: border-box;
+        }
+
+        .progress-bar-fill.indeterminate {
+            width: 50%;
+            animation: pulse-width 2s infinite ease-in-out alternate;
+        }
+
+        @keyframes pulse-width {
+            0% { width: 10%; transform: translateX(0); }
+            100% { width: 40%; transform: translateX(150%); }
+        }
+
+        .saved-sessions {
+            margin-top: 48px;
+            text-align: left;
+        }
+
+        .saved-sessions h2 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 16px;
+        }
+
+        .saved-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .saved-item {
+            background-color: var(--md-sys-color-surface-container-high);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .saved-item:hover {
+            background-color: var(--md-sys-color-surface-container-highest);
+            border-color: var(--md-sys-color-primary);
+        }
+
+        .saved-title {
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 4px;
+        }
+
+        .saved-meta {
+            font-size: 0.85rem;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .saved-icon {
+            color: var(--md-sys-color-primary);
+            font-size: 24px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 16px;
+            letter-spacing: 0px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: var(--md-sys-color-on-surface);
+            opacity: 0.8;
+            margin-bottom: 32px;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+
+        .support-disclaimer {
+            font-size: 0.85rem;
+            opacity: 0.72;
+            margin-bottom: 24px;
+        }
+
+        .upload-area {
+            border: 1px dashed var(--md-sys-color-outline);
+            border-radius: 16px;
+            padding: 40px 24px;
+            transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s;
+            cursor: pointer;
+            margin-bottom: 32px;
+            background-color: var(--md-sys-color-surface-container-high);
+            position: relative;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--md-sys-color-primary);
+            background-color: rgba(168, 199, 250, 0.08);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            display: block;
+            color: var(--md-sys-color-primary);
+        }
+
+        input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            padding: 0 24px;
+            height: 40px;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.1px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08));
+        }
+
+        .btn:active {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12));
+        }
+
+        .flash {
+            background-color: var(--md-sys-color-error);
+            color: var(--md-sys-color-on-error);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        #file-name {
+            display: block;
+            margin-top: 16px;
+            font-size: 0.875rem;
+            color: var(--md-sys-color-primary);
+            font-weight: 500;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: var(--md-sys-color-surface-container-high);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-value {
+            position: absolute;
+            height: 100%;
+            background-color: var(--md-sys-color-primary);
+            animation: indeterminate 2s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+        }
+
+        @keyframes indeterminate {
+            0% { left: -35%; width: 35%; }
+            60% { left: 100%; width: 90%; }
+            100% { left: 100%; width: 90%; }
+        }
+
+        #progress-text {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--md-sys-color-on-surface-variant);
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Semaino</h1>
+        <p style="color: var(--md-sys-color-primary); font-weight: 500; margin-top: -10px; font-size: 1.1em;">
+            Natural language analysis for Modern and Ancient Greek
+        </p>
+        <p style="line-height: 1.6; color: var(--md-sys-color-on-surface-variant); max-width: 700px; margin-bottom: 24px;">
+            Named entity recognition, part-of-speech tagging, morphological analysis and dependency parsing, presented through interactive views of entities, grammar and places. All OCR and language models run locally on your own hardware, so your documents never leave your machine.
+        </p>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('analyse') }}" method="post" enctype="multipart/form-data">
+            <div class="upload-area" id="drop-zone">
+                <span class="upload-icon">📄</span>
+                <span id="upload-text">Drag & drop a .pdf, .docx, .md or .txt file here<br>or click to browse</span>
+                <input type="file" name="file" id="file-input" accept=".pdf,.docx,.md,.txt" required>
+                <div class="form-text" style="color: var(--md-sys-color-on-surface-variant); font-size: 0.85rem; margin-top: 8px;">PDFs are converted with Marker OCR; Word and text files are analysed directly.</div>
+                <div id="error-message"></div>
+                <span id="file-name"></span>
+            </div>
+            
+            <div style="margin-bottom: 32px; text-align: left;">
+                <label for="model-select" style="display: block; font-size: 0.9rem; margin-bottom: 8px; color: var(--md-sys-color-on-surface-variant);">Analysis Engine</label>
+                <select name="model_choice" id="model-select" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); font-size: 1rem; appearance: none; cursor: pointer;">
+                    <option value="custom_el">Modern Greek</option>
+                    <option value="grc_odycy_joint_trf">Ancient Greek</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn" id="submit-btn">Process Document</button>
+            
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-bar-value"></div>
+                </div>
+                <div id="progress-text">
+                    <span id="progress-status">Initialising NLP engine...</span>
+                    <span id="progress-timer">0s</span>
+                </div>
+            </div>
+        </form>
+
+        <div class="saved-sessions" id="saved-sessions-container" style="display: none;">
+            <h2>Saved Analyses</h2>
+            <div class="saved-list" id="saved-list">
+                <!-- Saved items will be injected here -->
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 48px; margin-bottom: 8px; font-size: 0.85rem; color: var(--md-sys-color-outline);">
+            Developed by <a href="https://github.com/sakellarioug" target="_blank" style="color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; transition: color 0.2s;" onmouseover="this.style.color='var(--md-sys-color-primary)'" onmouseout="this.style.color='inherit'">Georgios Sakellariou</a>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+        const uploadText = document.getElementById('upload-text');
+        const dropZone = document.getElementById('drop-zone');
+        const submitBtn = document.getElementById('submit-btn');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                fileName.textContent = e.target.files[0].name;
+                uploadText.style.display = 'none';
+                submitBtn.textContent = 'Process ' + e.target.files[0].name;
+            }
+        });
+
+        // Basic visual feedback for drag over
+        dropZone.addEventListener('dragover', (e) => {
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', (e) => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        // Form submission loading state
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            submitBtn.style.display = 'none';
+            const progressContainer = document.getElementById('progress-container');
+            const progressStatus = document.getElementById('progress-status');
+            const progressTimer = document.getElementById('progress-timer');
+            const progressBar = document.querySelector('.progress-bar-value');
+            
+            progressContainer.style.display = 'block';
+            progressBar.style.animation = 'none';
+            progressBar.style.width = '0%';
+            
+            let seconds = 0;
+            const timerInterval = setInterval(() => {
+                seconds++;
+                progressTimer.textContent = seconds + "s";
+            }, 1000);
+            
+            let endpoint = '/analyse';
+            const fileInputElem = document.getElementById('file-input');
+            const isPdf = fileInputElem.files.length > 0 && fileInputElem.files[0].name.toLowerCase().endsWith('.pdf');
+            
+            if (isPdf) {
+                endpoint = '/convert_pdf';
+                progressStatus.textContent = "Converting PDF to Markdown using Marker OCR... This may take a while.";
+            }
+            
+            const formData = new FormData(this);
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    clearInterval(timerInterval);
+                    progressStatus.textContent = "Error: " + data.error;
+                    progressStatus.style.color = "var(--md-sys-color-error)";
+                    submitBtn.style.display = '';
+                    return;
+                }
+                
+                if (data.task_id) {
+                    const pollInterval = setInterval(async () => {
+                        try {
+                            const statusRes = await fetch('/status/' + data.task_id);
+                            const statusData = await statusRes.json();
+                            
+                            if (statusData.status === 'processing') {
+                                if (isPdf) {
+                                    progressBar.style.width = '50%';
+                                    progressBar.style.animation = 'pulse 2s infinite';
+                                    progressStatus.textContent = "Running OCR... please wait.";
+                                } else if (statusData.total > 0) {
+                                    const pct = (statusData.progress / statusData.total) * 100;
+                                    progressBar.style.width = pct + '%';
+                                    progressBar.style.animation = 'none';
+                                    progressStatus.textContent = `Analysing sentence ${statusData.progress} of ${statusData.total}...`;
+                                }
+                            } else if (statusData.status === 'complete') {
+                                clearInterval(pollInterval);
+                                clearInterval(timerInterval);
+                                progressBar.style.width = '100%';
+                                progressBar.style.animation = 'none';
+                                
+                                if (isPdf) {
+                                    progressStatus.textContent = "OCR complete! Redirecting to inspection view...";
+                                    window.location.href = '/inspect/' + data.task_id;
+                                } else {
+                                    progressStatus.textContent = "Rendering interactive maps...";
+                                    window.location.href = '/results/' + data.task_id;
+                                }
+                            } else if (statusData.status === 'error') {
+                                clearInterval(pollInterval);
+                                clearInterval(timerInterval);
+                                progressStatus.textContent = "Error: " + (statusData.error || "Unknown error");
+                                progressStatus.style.color = "var(--md-sys-color-error)";
+                                progressBar.style.animation = 'none';
+                            }
+                        } catch (err) {
+                            console.error("Polling error:", err);
+                        }
+                    }, 500);
+                }
+            } catch (err) {
+                clearInterval(timerInterval);
+                progressStatus.textContent = "Request failed.";
+                progressStatus.style.color = "var(--md-sys-color-error)";
+                progressBar.style.animation = 'none';
+            }
+        });
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[c]);
+        }
+
+        // Fetch saved sessions on load
+        async function fetchSavedSessions() {
+            try {
+                const response = await fetch('/saved_analyses');
+                const result = await response.json();
+                
+                if (result.saved_analyses && result.saved_analyses.length > 0) {
+                    const container = document.getElementById('saved-sessions-container');
+                    const list = document.getElementById('saved-list');
+                    container.style.display = 'block';
+                    list.innerHTML = '';
+                    
+                    result.saved_analyses.forEach(session => {
+                        const date = new Date(session.timestamp).toLocaleString();
+                        const el = document.createElement('div');
+                        el.className = 'saved-item';
+                        el.onclick = () => loadSession(session.id);
+                        el.innerHTML = `
+                            <div>
+                                <div class="saved-title">${escapeHtml(session.title)}</div>
+                                <div class="saved-meta">${escapeHtml(date)} &bull; ${escapeHtml(session.filename)}</div>
+                            </div>
+                            <div class="saved-icon">➔</div>
+                        `;
+                        list.appendChild(el);
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching saved sessions:", error);
+            }
+        }
+        
+        async function loadSession(id) {
+            try {
+                const response = await fetch(`/load_analysis/${id}`);
+                const result = await response.json();
+                if (result.status === 'success') {
+                    window.location.href = `/results/${result.task_id}`;
+                } else {
+                    alert('Error loading analysis: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error loading analysis: ' + error);
+            }
+        }
+
+        window.onload = fetchSavedSessions;
+    </script>
+</body>
+</html>
