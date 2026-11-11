@@ -98,8 +98,8 @@ Semaino is packaged as a standard Python application. Hardware acceleration (App
 It's recommended to install Semaino in an isolated virtual environment (e.g. using `venv`, `uv`, or `pipx`).
 ```bash
 # Clone the repository
-git clone https://github.com/sakellarioug/Semaino.git
-cd Semaino
+git clone https://github.com/sakellarioug/semaino.git
+cd semaino
 
 # Create virtual environment and install Semaino
 python3 -m venv venv
