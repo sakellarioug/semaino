@@ -151,17 +151,17 @@ semaino serve --offline-map
 
 ## Running the Tests
 ```bash
-python tests/test_preflight.py         # the web app starts, its basic routes answer and uploads (incl. .docx) are accepted
-python tests/test_docx_import.py      # Word .docx text extraction
-python tests/test_text_cleaning.py     # OCR clean-up rules
-python tests/test_sentence_rules.py    # paragraph and sentence boundaries
-python tests/test_ui_smoke.py          # results page in headless Chrome (needs Google Chrome or Chromium)
+python tests/test_preflight.py                # the web app starts, its basic routes answer and uploads (incl. .docx) are accepted
+python tests/test_docx_import.py              # Word .docx text extraction
+python tests/test_text_cleaning.py            # OCR clean-up rules
+python tests/test_sentence_rules.py           # paragraph and sentence boundaries
+python tests/test_ui_pre_flight_check.py      # results page in headless Chrome (needs Google Chrome or Chromium)
 ```
 All five also run under `pytest`. Once the models are downloaded, set `HF_HUB_OFFLINE=1` to avoid network checks.
 
 ## Project Structure
 - `src/semaino/`: Python package containing the web app, CLI, NLP engine, OCR clean-up, Word (`.docx`) import and templates.
-- `tests/`: Unit tests and the end-to-end UI smoke test.
+- `tests/`: Unit tests and the end-to-end UI pre-flight check.
 - `docs/`: User Guide and screenshots.
 - `examples/`: Sample texts and PDFs.
 

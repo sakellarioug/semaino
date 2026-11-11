@@ -1,4 +1,4 @@
-"""End-to-end UI smoke test for the results page, driven through headless Chrome.
+"""End-to-end UI pre-flight check for the results page, driven through headless Chrome.
 
 Why this exists: the results page broke completely without any server-side error (an unclosed
 <template> silently disabled every <script>). Static checks cannot catch that kind of failure,
@@ -6,9 +6,9 @@ so this test loads the real page from a real Flask server and exercises it like 
 sidebar navigation, highlighting, category filters, both minimaps, dependency arrows and tabs.
 
 Usage
-    pytest tests/test_ui_smoke.py               # synthetic document, no NLP models needed
-    python tests/test_ui_smoke.py               # same, with a readable report
-    python tests/test_ui_smoke.py --md doc.md   # run the real NLP pipeline on a document first
+    pytest tests/test_ui_pre_flight_check.py               # synthetic document, no NLP models needed
+    python tests/test_ui_pre_flight_check.py               # same, with a readable report
+    python tests/test_ui_pre_flight_check.py --md doc.md   # run the real NLP pipeline on a document first
 
 Requirements: Google Chrome or Chromium (set SEMAINO_CHROME to override the path).
 All external hosts are blocked inside the browser, so the test never contacts OpenStreetMap.
