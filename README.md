@@ -175,4 +175,4 @@ All five also run under `pytest`. Once the models are downloaded, set `HF_HUB_OF
 This project is licensed under the **Apache-2.0 License**. See the `LICENSE` file for details.
 
 ## Acknowledgements
-Please see the `ACKNOWLEDGMENTS.md` file for a detailed list of the incredible open-source projects, models, and research groups that made this tool possible.
+Please see the `ACKNOWLEDGEMENTS.md` file for a detailed list of the incredible open-source projects, models, and research groups that made this tool possible.

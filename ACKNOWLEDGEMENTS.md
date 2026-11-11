@@ -4,7 +4,7 @@ This project gratefully acknowledges the following open-source projects and rese
 
 ## NLP Libraries & Models
 - **[spaCy](https://spacy.io)** *(MIT License)*  
-  Industrial-strength NLP library used for tokenization, POS tagging, dependency parsing, and sentence segmentation.
+  Industrial-strength NLP library used for tokenisation, POS tagging, dependency parsing, and sentence segmentation.
 - **[gr-nlp-toolkit](https://github.com/nlpaueb/gr-nlp-toolkit)** *(Apache 2.0 License)*  
   By the NLP Group at Athens University of Economics and Business (AUEB). Used for Modern Greek NER, POS tagging, and dependency parsing. We especially thank the researchers and authors of the toolkit presented at COLING 2025: Lefteris Loukas, Nikolaos Smyrnioudis, Chrysa Dikonomaki, Spiros Barbakos, Anastasios Toumazatos, John Koutsikakis, Manolis Kyriakakis, Mary Georgiou, Stavros Vassos, John Pavlopoulos, and Ion Androutsopoulos.
 - **[OdyCy (grc_odycy_joint_trf)](https://github.com/chcaa/grc_odycy_joint_trf)** *(MIT License)*  
@@ -12,7 +12,7 @@ This project gratefully acknowledges the following open-source projects and rese
 - **[Hugging Face Transformers](https://github.com/huggingface/transformers)** *(Apache 2.0 License)*  
   Used for model loading and subword tokenisation.
 - **[nlpaueb/bert-base-greek-uncased-v1](https://huggingface.co/nlpaueb/bert-base-greek-uncased-v1)**  
-  By AUEB NLP Group. Greek BERT model used for subword tokenization in the Modern Greek pipeline.
+  By AUEB NLP Group. Greek BERT model used for subword tokenisation in the Modern Greek pipeline.
 - **[UGARIT/grc-ner-bert](https://huggingface.co/UGARIT/grc-ner-bert)**  
   Ancient Greek NER model used for named entity recognition on Ancient Greek texts.
 - **[PyTorch](https://pytorch.org)** *(BSD-style License)*  
