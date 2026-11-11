@@ -1,4 +1,4 @@
-# Acknowledgments
+# Acknowledgements
 
 This project gratefully acknowledges the following open-source projects and research groups whose work makes this tool possible.
 
@@ -10,7 +10,7 @@ This project gratefully acknowledges the following open-source projects and rese
 - **[OdyCy (grc_odycy_joint_trf)](https://github.com/chcaa/grc_odycy_joint_trf)** *(MIT License)*  
   Ancient/Polytonic Greek transformer model for spaCy by the Aarhus Center for Humanities Computing. Used for robust sentence parsing.
 - **[Hugging Face Transformers](https://github.com/huggingface/transformers)** *(Apache 2.0 License)*  
-  Used for model loading and subword tokenization.
+  Used for model loading and subword tokenisation.
 - **[nlpaueb/bert-base-greek-uncased-v1](https://huggingface.co/nlpaueb/bert-base-greek-uncased-v1)**  
   By AUEB NLP Group. Greek BERT model used for subword tokenization in the Modern Greek pipeline.
 - **[UGARIT/grc-ner-bert](https://huggingface.co/UGARIT/grc-ner-bert)**  
@@ -32,7 +32,7 @@ This project gratefully acknowledges the following open-source projects and rese
 - **[Werkzeug](https://werkzeug.palletsprojects.com)** *(BSD-3-Clause License)*  
   WSGI toolkit used by Flask.
 - **[Material Design 3](https://m3.material.io)**  
-  Design system by Google, providing UI design principles and color tokens used across the application.
+  Design system by Google, providing UI design principles and colour tokens used across the application.
 - **[Bootstrap](https://getbootstrap.com)** *(MIT License)*
 - **[Leaflet](https://leafletjs.com/)** *(BSD-2-Clause License)*
 - **[vis-network](https://github.com/visjs/vis-network)** *(Apache 2.0 / MIT License)*

@@ -1,7 +1,7 @@
 """Unit tests for the custom sentence-boundary rules (no trained spaCy model needed).
 
 Uses a blank spaCy Greek pipeline, so it runs in seconds. Importing ner_engine also imports
-gr-nlp-toolkit, which loads its BERT tokenizer at import time: once the models are cached, set
+gr-nlp-toolkit, which loads its BERT tokeniser at import time: once the models are cached, set
 HF_HUB_OFFLINE=1 to avoid network checks.
 Run with `pytest tests/test_sentence_rules.py` or `python tests/test_sentence_rules.py`.
 """

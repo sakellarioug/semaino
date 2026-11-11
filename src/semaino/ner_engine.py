@@ -437,7 +437,7 @@ def add_entity_ids(html, clean_ents):
 def process_markdown(text, progress_callback=None):
     # Remove OCR markup (headings, footnote <sup>, images, LaTeX...) so it is not analysed as words
     text = clean_ocr_markdown(text)
-    # Preprocess text to ensure currency symbols are separated from numbers to prevent tokenization drops
+    # Preprocess text to ensure currency symbols are separated from numbers to prevent tokenisation drops
     text = re.sub(r'(\d)([€$£])', r'\1 \2', text)
     
     # 1. Run inference

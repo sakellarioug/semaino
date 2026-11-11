@@ -20,7 +20,7 @@
             --md-sys-color-outline-variant: #44474E;
             --md-sys-color-error: #FFB4AB;
             
-            /* Highlighting custom colors */
+            /* Highlighting custom colours */
             --mark-bg: rgba(226, 226, 226, 0.1);
             --mark-border: var(--md-sys-color-outline-variant);
             --target-ring: var(--md-sys-color-primary);
@@ -876,7 +876,7 @@
             font-weight: bold;
         }
 
-        /* Color coding for POS tags */
+        /* Colour coding for POS tags */
         .pos-NOUN, .pos-PROPN { background-color: #2e5c3e; color: #a3e8b7; }
         .pos-VERB, .pos-AUX { background-color: #722d36; color: #ffb4ab; }
         .pos-ADJ { background-color: #5b4011; color: #ffdc9c; }
@@ -1171,7 +1171,7 @@
                             <select id="mindmap-filter" style="display: block; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--md-sys-color-outline); background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); font-size: 0.9rem; cursor: pointer;" onchange="applyMindmapFilter()">
                                 <option value="default">Default Summary (Entities + Core Grammar)</option>
                                 <option value="entities_only">Entities & Inter-Entity Relationships Only</option>
-                                <option value="entities_neighbors">Entities & Direct Neighbors</option>
+                                <option value="entities_neighbors">Entities & Direct Neighbours</option>
                                 <option value="non_entities">Non-Entities (Core Grammar Only)</option>
                             </select>
                         </div>
@@ -1437,7 +1437,7 @@
                     const depLabel = depTranslations[rawDep] || rawDep;
                     cCurrentHead = headEl;
                     
-                    // Dynamic Colors and Target Glow
+                    // Dynamic Colours and Target Glow
                     if (headEl.classList.contains('tp-ent')) {
                         cArrowPath.setAttribute('stroke', '#FF1744');
                         cArrowPolygon.setAttribute('fill', '#FF1744');

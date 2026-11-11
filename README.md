@@ -14,13 +14,13 @@ It is built for linguists, historians, legal professionals, and researchers who 
 
 ## Features
 
-- **PDF OCR Pipeline**: Seamlessly upload PDFs which are converted to highly accurate markdown via **Marker OCR** (utilizing Surya vision models and accelerated by `llama.cpp` on Apple Metal/NVIDIA CUDA). Users can inspect the OCR'd text side-by-side with the original PDF before proceeding to NLP analysis.
+- **PDF OCR Pipeline**: Seamlessly upload PDFs which are converted to highly accurate markdown via **Marker OCR** (utilising Surya vision models and accelerated by `llama.cpp` on Apple Metal/NVIDIA CUDA). Users can inspect the OCR'd text side-by-side with the original PDF before proceeding to NLP analysis.
 - **Word Document Import**: `.docx` files are read directly (no OCR, no extra dependencies), keeping their paragraphs; table rows are imported as lines of text. Plain `.md` and `.txt` files are also accepted.
 - **Automatic OCR Clean-up**: Markdown and HTML left over from OCR (heading marks, footnote numbers in `<sup>`, image links, emphasis markers, tables, LaTeX-encoded Greek letters) is stripped before analysis, so it is never tagged or displayed as words. Ordinals such as `6ος` are kept.
 - **Paragraph-Aware Analysis**: A blank line always ends a sentence, so headings stay separate from body text and the results keep the paragraph structure of your document.
 - **Multi-Engine NLP Analysis**:
   - **Modern Greek (Innovative Custom Pipeline)**: Recommended for most Greek texts from the 19th century to the present. While many widely used NLP toolkits (including spaCy) currently lack native transformer-level models for Modern Greek, this custom pipeline bridges that industry-wide gap. It combines a state-of-the-art open-source BERT transformer (via `gr-nlp-toolkit`) for deep-learning accuracy in NER, POS, and dependency parsing, seamlessly integrated with the structural integrity and production-grade architecture of the **spaCy** ecosystem. The original capitalisation and accents (including polytonic) are restored in the results.
-  - **Ancient Greek**: Uses the `grc_odycy_joint_trf` spaCy model with `UGARIT/grc-ner-bert` for specialized Ancient Greek named entity recognition.
+  - **Ancient Greek**: Uses the `grc_odycy_joint_trf` spaCy model with `UGARIT/grc-ner-bert` for specialised Ancient Greek named entity recognition.
 
 ### Why Deterministic NLP over LLMs?
 While Generative AI and LLMs (like ChatGPT) are incredibly powerful for text generation, they suffer from architectural limitations when it comes to **precise spatial extraction**:
@@ -174,5 +174,5 @@ All five also run under `pytest`. Once the models are downloaded, set `HF_HUB_OF
 ## License
 This project is licensed under the **Apache-2.0 License**. See the `LICENSE` file for details.
 
-## Acknowledgments
+## Acknowledgements
 Please see the `ACKNOWLEDGMENTS.md` file for a detailed list of the incredible open-source projects, models, and research groups that made this tool possible.

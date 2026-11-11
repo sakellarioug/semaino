@@ -1,6 +1,6 @@
 """Turn Marker's OCR Markdown into plain prose before NLP analysis.
 
-Marker (the PDF OCR step) emits Markdown and some HTML/LaTeX. Left in place, the tokenizer
+Marker (the PDF OCR step) emits Markdown and some HTML/LaTeX. Left in place, the tokeniser
 treats that markup as words: `# # # #` headings, `< sup > 1 < / sup >` footnote references,
 image links, list bullets, and LaTeX that Marker produces when it misreads a glyph
 (e.g. `$T\\tilde{\\omega}$` for "Tῶ"). This module removes the markup while keeping the text
