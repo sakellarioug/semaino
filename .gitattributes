@@ -1,0 +1,3 @@
+# Exclude HTML templates from GitHub Linguist language statistics
+# so the repository is accurately classified as Python.
+*.html linguist-detectable=false
