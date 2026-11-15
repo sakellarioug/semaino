@@ -114,13 +114,26 @@ def strip_accents(text):
     return ''.join(c for c in unicodedata.normalize('NFKD', text) if not unicodedata.combining(c))
 
 
-def _merge_dotted_numbers(tokens):
+class _TagProxy:
+    """Minimal token stand-in (text + ner tag) so the merge rules can run on any engine's tokens."""
+    __slots__ = ("text", "ner")
+
+    def __init__(self, text, ner):
+        self.text = text
+        self.ner = ner
+
+
+def _merge_dotted_numbers(tokens, source=None):
     """Merge numeric tokens split by thousands dots (e.g. 5 . 418 or 152 . 984).
 
     In Greek accounting and historical texts, numbers often use '.' as a thousands separator.
     When gr-nlp-toolkit tokenises '152.984', it produces ['152', '.', '984'], tagging either
     only the prefix as CARDINAL or leaving the tail as O. This function unifies them into
     a single CARDINAL (or MONEY/QUANTITY if already marked) entity spanning the full number.
+
+    If `source` (the text the tokens came from) is given, a group is only merged when the digits,
+    dot and digits really are written without spaces (e.g. '2.100'). That keeps list numbering
+    such as '2. 100 people' from being read as a single number.
     """
     n = len(tokens)
     i = 0
@@ -128,7 +141,12 @@ def _merge_dotted_numbers(tokens):
         t_i = tokens[i].text
         if re.match(r"^\d{1,3}$", t_i):
             j = i
+            joined = t_i
             while j + 2 < n and tokens[j + 1].text in (".", ",") and re.match(r"^\d{3}$", tokens[j + 2].text):
+                candidate = joined + tokens[j + 1].text + tokens[j + 2].text
+                if source is not None and candidate not in source:
+                    break
+                joined = candidate
                 j += 2
             if j > i:
                 label = "CARDINAL"
@@ -149,15 +167,24 @@ def _merge_dotted_numbers(tokens):
         i += 1
 
 
-NON_PERSON_INITIALS = {"γρ", "γρ.", "παρ", "παρ.", "σουμα", "σοῦμα"}
+def _fold(text):
+    """Accent-stripped, lower-case form used to compare tokens from any engine.
 
-GREEK_ARTICLES = {
+    gr-nlp-toolkit returns lower-case, accent-free tokens ('του', 'γ'); spaCy keeps the original
+    ('τοῦ', 'Γ'). Comparing folded forms makes the rules behave the same on both.
+    """
+    return strip_accents(text).lower().strip(" .")
+
+
+NON_PERSON_INITIALS = {_fold(w) for w in ("γρ", "παρ", "σοῦμα")}
+
+GREEK_ARTICLES = {_fold(w) for w in (
     "ο", "ὁ", "του", "τοῦ", "τον", "τὸν", "τω", "τῷ",
     "η", "ἡ", "της", "τῆς", "την", "τὴν",
     "οι", "οἱ", "των", "τῶν", "τους", "τοὺς",
     "δια", "διὰ", "απο", "ἀπὸ", "από", "υπο", "ὑπὸ", "υπό",
-    "κ", "κ.", "κα", "κα.", "κος", "κύριος", "κύριον", "κυρίου",
-}
+    "κ", "κα", "κος", "κύριος", "κύριον", "κυρίου",
+)}
 
 
 def _merge_name_initials(tokens):
@@ -174,20 +201,20 @@ def _merge_name_initials(tokens):
         t1 = tokens[i + 1]
         t2 = tokens[i + 2]
 
-        t0_clean = t0.text.strip(" .")
-        t2_clean = t2.text.strip(" .")
+        t0_clean = _fold(t0.text)
+        t2_clean = _fold(t2.text)
 
-        if t1.text == "." and t0_clean.lower() not in NON_PERSON_INITIALS and t2_clean.lower() not in NON_PERSON_INITIALS:
-            is_t0_abbr = bool(re.match(r"^[Α-Ωα-ωA-Za-zΆ-Ώά-ώἀ-ῼἈ-΅]{1,4}$", t0_clean))
+        if t1.text == "." and t0_clean not in NON_PERSON_INITIALS and t2_clean not in NON_PERSON_INITIALS:
+            is_t0_abbr = bool(re.fullmatch(r"[^\W\d_]{1,4}", t0_clean))
             t0_ner = getattr(t0, "ner", "O") or "O"
             t2_ner = getattr(t2, "ner", "O") or "O"
 
             t0_is_per = "PER" in t0_ner
             t2_is_per = "PER" in t2_ner
-            is_single_cap = bool(re.match(r"^[Α-ΩA-ZΆ-ΏἈ-΅]$", t0_clean))
-            has_preceding_article = (i > 0 and tokens[i - 1].text.strip(" .").lower() in GREEK_ARTICLES)
+            is_single_letter = len(t0_clean) == 1 and t0_clean.isalpha()
+            has_preceding_article = (i > 0 and _fold(tokens[i - 1].text) in GREEK_ARTICLES)
 
-            if (is_t0_abbr and t0_is_per and t2_is_per) or (is_single_cap and t2_is_per and has_preceding_article):
+            if (is_t0_abbr and t0_is_per and t2_is_per) or (is_single_letter and t2_is_per and has_preceding_article):
                 t0.ner = "I-PER" if t0.ner.startswith(("I-", "E-")) else "B-PER"
                 t1.ner = "I-PER"
                 if t2.ner.startswith("S-"):
@@ -307,7 +334,7 @@ def analyse_with_gr_toolkit(text, progress_callback=None):
             except:
                 doc_gr = Pipeline("pos,ner")(subsent)
 
-            _merge_dotted_numbers(doc_gr.tokens)
+            _merge_dotted_numbers(doc_gr.tokens, subsent)
             _merge_name_initials(doc_gr.tokens)
 
             current = None
@@ -718,62 +745,12 @@ def analyse_with_spacy_only(text, model_choice, progress_callback=None):
                 prefix = "B" if i == 0 else "I"
                 token_tags[tok.i] = f"{prefix}-{label}"
 
-        sent_tokens = list(sent)
-        n_sent = len(sent_tokens)
-        s_i = 0
-        while s_i < n_sent:
-            t_text = sent_tokens[s_i].text
-            if re.match(r"^\d{1,3}$", t_text):
-                s_j = s_i
-                while s_j + 2 < n_sent and sent_tokens[s_j + 1].text in (".", ",") and re.match(r"^\d{3}$", sent_tokens[s_j + 2].text):
-                    s_j += 2
-                if s_j > s_i:
-                    label = "CARDINAL"
-                    token_tags[sent_tokens[s_i].i] = f"B-{label}"
-                    for s_k in range(s_i + 1, s_j):
-                        token_tags[sent_tokens[s_k].i] = f"I-{label}"
-                    token_tags[sent_tokens[s_j].i] = f"E-{label}"
-                    s_i = s_j + 1
-                    continue
-            s_i += 1
+        proxies = [_TagProxy(t.text, token_tags[t.i]) for t in sent]
+        _merge_dotted_numbers(proxies, sent.text)
+        _merge_name_initials(proxies)
+        for t, px in zip(sent, proxies):
+            token_tags[t.i] = px.ner
 
-        s_i = 0
-        while s_i < n_sent - 2:
-            t0 = sent_tokens[s_i]
-            t1 = sent_tokens[s_i + 1]
-            t2 = sent_tokens[s_i + 2]
-            t0_clean = t0.text.strip(" .")
-            t2_clean = t2.text.strip(" .")
-            if t1.text == "." and t0_clean.lower() not in NON_PERSON_INITIALS and t2_clean.lower() not in NON_PERSON_INITIALS:
-                t0_ner = token_tags[t0.i]
-                t2_ner = token_tags[t2.i]
-                is_t0_abbr = bool(re.match(r"^[Α-Ωα-ωA-Za-zΆ-Ώά-ώἀ-ῼἈ-΅]{1,4}$", t0_clean))
-                t0_is_per = "PER" in t0_ner
-                t2_is_per = "PER" in t2_ner
-                is_single_cap = bool(re.match(r"^[Α-ΩA-ZΆ-ΏἈ-΅]$", t0_clean))
-                has_preceding_article = (s_i > 0 and sent_tokens[s_i - 1].text.strip(" .").lower() in GREEK_ARTICLES)
-                if (is_t0_abbr and t0_is_per and t2_is_per) or (is_single_cap and t2_is_per and has_preceding_article):
-                    token_tags[t0.i] = "I-PER" if token_tags[t0.i].startswith(("I-", "E-")) else "B-PER"
-                    token_tags[t1.i] = "I-PER"
-                    if token_tags[t2.i].startswith("S-"):
-                        token_tags[t2.i] = "E-PER"
-                    elif token_tags[t2.i].startswith("B-"):
-                        token_tags[t2.i] = "I-PER"
-                    s_i += 1
-                    continue
-                t0_is_gpe = "GPE" in t0_ner
-                t2_is_gpe = "GPE" in t2_ner
-                if is_t0_abbr and t0_is_gpe and t2_is_gpe:
-                    token_tags[t0.i] = "I-GPE" if token_tags[t0.i].startswith(("I-", "E-")) else "B-GPE"
-                    token_tags[t1.i] = "I-GPE"
-                    if token_tags[t2.i].startswith("S-"):
-                        token_tags[t2.i] = "E-GPE"
-                    elif token_tags[t2.i].startswith("B-"):
-                        token_tags[t2.i] = "I-GPE"
-                    s_i += 1
-                    continue
-            s_i += 1
-        
         for tok in sent:
             local_idx = tok.i - sent_start_i + 1
             local_head = tok.head.i - sent_start_i + 1

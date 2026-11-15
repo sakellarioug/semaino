@@ -75,6 +75,30 @@ def test_comma_thousands_separator():
     assert [t.ner for t in tokens] == ["B-CARDINAL", "I-CARDINAL", "E-CARDINAL"]
 
 
+def _toks(text):
+    return [DummyToken(w) for w in text.split()]
+
+
+def test_spaced_list_number_not_merged_when_source_given():
+    # '2. 100 people': the digits are not written together, so this is not 2,100
+    tokens = _toks("2 . 100")
+    _merge_dotted_numbers(tokens, "2. 100 people")
+    assert [t.ner for t in tokens] == ["O", "O", "O"]
+
+
+def test_unspaced_number_merged_when_source_given():
+    tokens = _toks("5 . 418")
+    _merge_dotted_numbers(tokens, "Σελίδα 5.418 εδώ")
+    assert [t.ner for t in tokens] == ["B-CARDINAL", "I-CARDINAL", "E-CARDINAL"]
+
+
+def test_partial_merge_stops_at_spaced_group():
+    # 1.234 is written together, but ' 567' is spaced: only the first group is merged
+    tokens = _toks("1 . 234 . 567")
+    _merge_dotted_numbers(tokens, "1.234. 567")
+    assert [t.ner for t in tokens] == ["B-CARDINAL", "I-CARDINAL", "E-CARDINAL", "O", "O"]
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in globals().items() if n.startswith("test_") and callable(f)]
     bad = 0

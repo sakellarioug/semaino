@@ -81,6 +81,25 @@ def test_list_marker_excluded():
     assert [t.ner for t in tokens] == ["O", "O", "O"]
 
 
+def test_raw_toolkit_tokens_lowercase_and_unaccented():
+    # gr-nlp-toolkit gives lower-case, accent-free tokens; the article rule must still fire
+    tokens = [DummyToken("του"), DummyToken("γ", "O"), DummyToken("."), DummyToken("κατερινη", "S-PERSON")]
+    _merge_name_initials(tokens)
+    assert [t.ner for t in tokens] == ["O", "B-PER", "I-PER", "E-PER"]
+
+
+def test_raw_toolkit_tokens_ledger_abbreviation_still_excluded():
+    tokens = [DummyToken("γρ", "S-PERSON"), DummyToken("."), DummyToken("παρ", "S-PERSON")]
+    _merge_name_initials(tokens)
+    assert [t.ner for t in tokens] == ["S-PERSON", "O", "S-PERSON"]
+
+
+def test_raw_toolkit_list_marker_without_article_not_merged():
+    tokens = [DummyToken("α", "O"), DummyToken("."), DummyToken("ορισμοι", "S-PERSON")]
+    _merge_name_initials(tokens)
+    assert [t.ner for t in tokens] == ["O", "O", "S-PERSON"]
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in globals().items() if n.startswith("test_") and callable(f)]
     bad = 0
