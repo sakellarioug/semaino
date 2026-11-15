@@ -114,6 +114,104 @@ def strip_accents(text):
     return ''.join(c for c in unicodedata.normalize('NFKD', text) if not unicodedata.combining(c))
 
 
+def _merge_dotted_numbers(tokens):
+    """Merge numeric tokens split by thousands dots (e.g. 5 . 418 or 152 . 984).
+
+    In Greek accounting and historical texts, numbers often use '.' as a thousands separator.
+    When gr-nlp-toolkit tokenises '152.984', it produces ['152', '.', '984'], tagging either
+    only the prefix as CARDINAL or leaving the tail as O. This function unifies them into
+    a single CARDINAL (or MONEY/QUANTITY if already marked) entity spanning the full number.
+    """
+    n = len(tokens)
+    i = 0
+    while i < n:
+        t_i = tokens[i].text
+        if re.match(r"^\d{1,3}$", t_i):
+            j = i
+            while j + 2 < n and tokens[j + 1].text in (".", ",") and re.match(r"^\d{3}$", tokens[j + 2].text):
+                j += 2
+            if j > i:
+                label = "CARDINAL"
+                for k in range(i, j + 1):
+                    ner = getattr(tokens[k], "ner", "O") or "O"
+                    if "MONEY" in ner:
+                        label = "MONEY"
+                        break
+                    elif "QUANTITY" in ner:
+                        label = "QUANTITY"
+
+                tokens[i].ner = f"B-{label}"
+                for k in range(i + 1, j):
+                    tokens[k].ner = f"I-{label}"
+                tokens[j].ner = f"E-{label}"
+                i = j + 1
+                continue
+        i += 1
+
+
+NON_PERSON_INITIALS = {"γρ", "γρ.", "παρ", "παρ.", "σουμα", "σοῦμα"}
+
+GREEK_ARTICLES = {
+    "ο", "ὁ", "του", "τοῦ", "τον", "τὸν", "τω", "τῷ",
+    "η", "ἡ", "της", "τῆς", "την", "τὴν",
+    "οι", "οἱ", "των", "τῶν", "τους", "τοὺς",
+    "δια", "διὰ", "απο", "ἀπὸ", "από", "υπο", "ὑπὸ", "υπό",
+    "κ", "κ.", "κα", "κα.", "κος", "κύριος", "κύριον", "κυρίου",
+}
+
+
+def _merge_name_initials(tokens):
+    """Join single-letter or abbreviated name initials with adjacent person/place entities.
+
+    In Greek texts, initials like 'Γ.' in 'Γ. Καναρίου' or 'Κων.' in 'Κων. Λαχανᾶ' are split
+    by the period into disconnected tokens. This rule safely joins them under the same entity
+    within the sentence, while excluding ledger abbreviations (e.g. 'Γρ.' and 'Παρ.').
+    """
+    n = len(tokens)
+    i = 0
+    while i < n - 2:
+        t0 = tokens[i]
+        t1 = tokens[i + 1]
+        t2 = tokens[i + 2]
+
+        t0_clean = t0.text.strip(" .")
+        t2_clean = t2.text.strip(" .")
+
+        if t1.text == "." and t0_clean.lower() not in NON_PERSON_INITIALS and t2_clean.lower() not in NON_PERSON_INITIALS:
+            is_t0_abbr = bool(re.match(r"^[Α-Ωα-ωA-Za-zΆ-Ώά-ώἀ-ῼἈ-΅]{1,4}$", t0_clean))
+            t0_ner = getattr(t0, "ner", "O") or "O"
+            t2_ner = getattr(t2, "ner", "O") or "O"
+
+            t0_is_per = "PER" in t0_ner
+            t2_is_per = "PER" in t2_ner
+            is_single_cap = bool(re.match(r"^[Α-ΩA-ZΆ-ΏἈ-΅]$", t0_clean))
+            has_preceding_article = (i > 0 and tokens[i - 1].text.strip(" .").lower() in GREEK_ARTICLES)
+
+            if (is_t0_abbr and t0_is_per and t2_is_per) or (is_single_cap and t2_is_per and has_preceding_article):
+                t0.ner = "I-PER" if t0.ner.startswith(("I-", "E-")) else "B-PER"
+                t1.ner = "I-PER"
+                if t2.ner.startswith("S-"):
+                    t2.ner = "E-PER"
+                elif t2.ner.startswith("B-"):
+                    t2.ner = "I-PER"
+                i += 1
+                continue
+
+            t0_is_gpe = "GPE" in t0_ner
+            t2_is_gpe = "GPE" in t2_ner
+            if is_t0_abbr and t0_is_gpe and t2_is_gpe:
+                t0.ner = "I-GPE" if t0.ner.startswith(("I-", "E-")) else "B-GPE"
+                t1.ner = "I-GPE"
+                if t2.ner.startswith("S-"):
+                    t2.ner = "E-GPE"
+                elif t2.ner.startswith("B-"):
+                    t2.ner = "I-GPE"
+                i += 1
+                continue
+
+        i += 1
+
+
 # --- Restoring original case and diacritics -------------------------------------------
 # gr-nlp-toolkit lowercases and strips all diacritics. To show the user's original text we
 # locate each token in the source sentence using a "folded" copy of both: decomposed (NFD),
@@ -208,7 +306,10 @@ def analyse_with_gr_toolkit(text, progress_callback=None):
                 doc_gr = nlp_gr(subsent)
             except:
                 doc_gr = Pipeline("pos,ner")(subsent)
-                
+
+            _merge_dotted_numbers(doc_gr.tokens)
+            _merge_name_initials(doc_gr.tokens)
+
             current = None
             folded_subsent, folded_index = build_folded_index(subsent)
             original_cursor = 0
@@ -289,7 +390,9 @@ def analyse_with_gr_toolkit(text, progress_callback=None):
                         entities.append(current)
                         current = None
                 elif prefix in ("I", "E") and current:
-                    if text_analyse in (".", ",", "/", "-", "'") or current["text"].endswith((".", ",", "/", "-", "'")):
+                    if text_analyse in (".", ",", "/", "-", "'"):
+                        current["text"] += text_analyse
+                    elif current["label"] in ("CARDINAL", "MONEY", "QUANTITY") and current["text"].endswith((".", ",", "/", "-", "'")):
                         current["text"] += text_analyse
                     else:
                         current["text"] += " " + text_analyse
@@ -517,7 +620,12 @@ def process_markdown(text, progress_callback=None):
                         }
                         global_ent_id += 1
                     elif prefix in ("I", "E") and current_ent:
-                        current_ent["text"] += " " + tok["text"]
+                        if tok["text"] in (".", ",", "'"):
+                            current_ent["text"] += tok["text"]
+                        elif current_ent.get("ner") in ("CARDINAL", "MONEY", "QUANTITY") and current_ent["text"].endswith((".", ",", "'")):
+                            current_ent["text"] += tok["text"]
+                        else:
+                            current_ent["text"] += " " + tok["text"]
                         token_remap[tok_idx] = current_ent["id"]
             if current_ent:
                 new_sent.append(current_ent)
@@ -609,6 +717,62 @@ def analyse_with_spacy_only(text, model_choice, progress_callback=None):
             for i, tok in enumerate(overlapping_tokens):
                 prefix = "B" if i == 0 else "I"
                 token_tags[tok.i] = f"{prefix}-{label}"
+
+        sent_tokens = list(sent)
+        n_sent = len(sent_tokens)
+        s_i = 0
+        while s_i < n_sent:
+            t_text = sent_tokens[s_i].text
+            if re.match(r"^\d{1,3}$", t_text):
+                s_j = s_i
+                while s_j + 2 < n_sent and sent_tokens[s_j + 1].text in (".", ",") and re.match(r"^\d{3}$", sent_tokens[s_j + 2].text):
+                    s_j += 2
+                if s_j > s_i:
+                    label = "CARDINAL"
+                    token_tags[sent_tokens[s_i].i] = f"B-{label}"
+                    for s_k in range(s_i + 1, s_j):
+                        token_tags[sent_tokens[s_k].i] = f"I-{label}"
+                    token_tags[sent_tokens[s_j].i] = f"E-{label}"
+                    s_i = s_j + 1
+                    continue
+            s_i += 1
+
+        s_i = 0
+        while s_i < n_sent - 2:
+            t0 = sent_tokens[s_i]
+            t1 = sent_tokens[s_i + 1]
+            t2 = sent_tokens[s_i + 2]
+            t0_clean = t0.text.strip(" .")
+            t2_clean = t2.text.strip(" .")
+            if t1.text == "." and t0_clean.lower() not in NON_PERSON_INITIALS and t2_clean.lower() not in NON_PERSON_INITIALS:
+                t0_ner = token_tags[t0.i]
+                t2_ner = token_tags[t2.i]
+                is_t0_abbr = bool(re.match(r"^[Α-Ωα-ωA-Za-zΆ-Ώά-ώἀ-ῼἈ-΅]{1,4}$", t0_clean))
+                t0_is_per = "PER" in t0_ner
+                t2_is_per = "PER" in t2_ner
+                is_single_cap = bool(re.match(r"^[Α-ΩA-ZΆ-ΏἈ-΅]$", t0_clean))
+                has_preceding_article = (s_i > 0 and sent_tokens[s_i - 1].text.strip(" .").lower() in GREEK_ARTICLES)
+                if (is_t0_abbr and t0_is_per and t2_is_per) or (is_single_cap and t2_is_per and has_preceding_article):
+                    token_tags[t0.i] = "I-PER" if token_tags[t0.i].startswith(("I-", "E-")) else "B-PER"
+                    token_tags[t1.i] = "I-PER"
+                    if token_tags[t2.i].startswith("S-"):
+                        token_tags[t2.i] = "E-PER"
+                    elif token_tags[t2.i].startswith("B-"):
+                        token_tags[t2.i] = "I-PER"
+                    s_i += 1
+                    continue
+                t0_is_gpe = "GPE" in t0_ner
+                t2_is_gpe = "GPE" in t2_ner
+                if is_t0_abbr and t0_is_gpe and t2_is_gpe:
+                    token_tags[t0.i] = "I-GPE" if token_tags[t0.i].startswith(("I-", "E-")) else "B-GPE"
+                    token_tags[t1.i] = "I-GPE"
+                    if token_tags[t2.i].startswith("S-"):
+                        token_tags[t2.i] = "E-GPE"
+                    elif token_tags[t2.i].startswith("B-"):
+                        token_tags[t2.i] = "I-GPE"
+                    s_i += 1
+                    continue
+            s_i += 1
         
         for tok in sent:
             local_idx = tok.i - sent_start_i + 1
@@ -753,7 +917,12 @@ def analyse_with_spacy_only(text, model_choice, progress_callback=None):
                         }
                         global_ent_id += 1
                     elif prefix in ("I", "E") and current_ent:
-                        current_ent["text"] += " " + tok["text"]
+                        if tok["text"] in (".", ",", "'"):
+                            current_ent["text"] += tok["text"]
+                        elif current_ent.get("ner") in ("CARDINAL", "MONEY", "QUANTITY") and current_ent["text"].endswith((".", ",", "'")):
+                            current_ent["text"] += tok["text"]
+                        else:
+                            current_ent["text"] += " " + tok["text"]
                         token_remap[tok_idx] = current_ent["id"]
             if current_ent:
                 new_sent.append(current_ent)

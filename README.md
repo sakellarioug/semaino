@@ -155,9 +155,11 @@ python tests/test_preflight.py                # the web app starts, its basic ro
 python tests/test_docx_import.py              # Word .docx text extraction
 python tests/test_text_cleaning.py            # OCR clean-up rules
 python tests/test_sentence_rules.py           # paragraph and sentence boundaries
+python tests/test_number_rules.py             # dotted number and thousand separator rules
+python tests/test_initial_rules.py            # name and toponym initial joining rules
 python tests/test_ui_pre_flight_check.py      # results page in headless Chrome (needs Google Chrome or Chromium)
 ```
-All five also run under `pytest`. Once the models are downloaded, set `HF_HUB_OFFLINE=1` to avoid network checks.
+All seven also run under `pytest`. Once the models are downloaded, set `HF_HUB_OFFLINE=1` to avoid network checks.
 
 ## Project Structure
 - `src/semaino/`: Python package containing the web app, CLI, NLP engine, OCR clean-up, Word (`.docx`) import and templates.
